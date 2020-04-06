@@ -41,6 +41,7 @@ all: $(DEPS) $(LIBRARY_WORK)
 
 # vlib LIBRARY
 clean:
+	mkdir -p $(PROJECT_WORK)
 	rm -f -r $(LIBRARY_WORK)
 	( cd $(PROJECT_WORK); $(VLIB) $(LIBRARY_NAME); )
 

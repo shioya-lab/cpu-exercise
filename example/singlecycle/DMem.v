@@ -49,9 +49,6 @@ module DMem(
 	// データの読み込み
 	integer i;
 	initial	begin
-		for( i = 0; i < `DATA_MEM_SIZE; i++ ) begin
-			mem[ i ] = 16'hcdcd;
-		end
 		$readmemh( "../DMem.dat", mem );
 	end
 
