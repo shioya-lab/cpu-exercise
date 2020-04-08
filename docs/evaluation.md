@@ -3,12 +3,12 @@
 
 このページでは，作成したプロセッサの性能評価の仕方について説明しています．
 
-## QuartusII上で計測する項目
+## Quartus Prime 上で計測する項目
 
 計測の前に Processing -> Start Compilation から，合成を行っておいてください．
 
 ### 動作周波数とクリティカルパスの遅延
-* Compilation Report内のTimeQuest Timing Analyzer→Slow 1200mV 100C Model→Fmax Summary を見る
+* Compilation Report内のTimeQuest Timing Analyzer -> Slow 1200mV 100C Model -> Fmax Summary を見る
     * 一番遅い周波数を動作周波数とする
     * シングルサイクルマシンでは，動作周波数は表示される値の1/4とする
 * クリティカルパス遅延は動作周波数の逆数をとる

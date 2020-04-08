@@ -19,6 +19,7 @@
 * [高速化に向けて](docs/optimize.md)
 * ツール
     * [ModelSim](docs/modelsim.md)
+    * [Quartus Prime](docs/quartus.md)
 * 言語
     * [Verilogの記法について](docs/verilog.md)
     * [HDLの記述例](docs/hdl.md)
