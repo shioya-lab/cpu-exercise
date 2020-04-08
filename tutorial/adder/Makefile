@@ -2,18 +2,18 @@ H3_CYGWIN_MODELSIM_PATH = $(shell cygpath -u "$$H3_MODELSIM_PATH")
 
 VLOG = $(H3_CYGWIN_MODELSIM_PATH)/vlog.exe
 VLIB = $(H3_CYGWIN_MODELSIM_PATH)/vlib.exe
-VSIM = $(H3_CYGWIN_MODELSIM_PATH)/vsim.exe
+VSIM = $(H3_CYGWIN_MODELSIM_PATH)/vsim.exe -c
 MODELSIM = $(H3_CYGWIN_MODELSIM_PATH)/modelsim.exe
 
 PROJECT_WORK = ModelSim
 LIBRARY_WORK = $(PROJECT_WORK)/$(LIBRARY_NAME)
 
 
-# ライブラリ名とトップレベルモジュール（シミュレーション対象）
+# Library name and top-level module to be simulated
 LIBRARY_NAME    = H3_Modules
 TOPLEVEL_MODULE = H3_Simulator 
 
-# コンパイル対象のファイル
+# Specify source files
 SOURCES = \
 	Adder.v \
 	AdderSim.v \
@@ -56,8 +56,8 @@ $(LIBRARY_WORK): Makefile
 sim: 
 	( cd $(PROJECT_WORK); $(VSIM) $(LIBRARY_NAME).$(TOPLEVEL_MODULE) -do "run -all"; )
 
-# do wave.do で 波形フォーマットを読み込んだ後，
-# 50ns 走らせる．
+# GUI simulation
+# Read wave format by executing "do wave.do" and run simulation 50ns
 sim-gui: 
 	( cd $(PROJECT_WORK); $(MODELSIM) $(LIBRARY_NAME).$(TOPLEVEL_MODULE) -do "do wave.do; run 50ns"; )
 
