@@ -8,5 +8,5 @@
 
 
 # Specify the binary path of Modelsim or QuestaSim.
-export H3_MODELSIM_PATH = 
+export H3_MODELSIM_PATH=/mnt/f/fpga/modelsim_ase/win32aloem
 

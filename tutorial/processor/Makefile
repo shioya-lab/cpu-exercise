@@ -1,4 +1,4 @@
-H3_CYGWIN_MODELSIM_PATH = $(shell cygpath -u "$$H3_MODELSIM_PATH")
+H3_CYGWIN_MODELSIM_PATH = /mnt/f/fpga/modelsim_ase/win32aloem
 
 VLOG = $(H3_CYGWIN_MODELSIM_PATH)/vlog.exe
 VLIB = $(H3_CYGWIN_MODELSIM_PATH)/vlib.exe

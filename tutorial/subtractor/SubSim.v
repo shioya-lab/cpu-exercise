@@ -18,6 +18,37 @@
 // 減算器の検証用のモジュール
 //
 module H3_Simulator;
+    `DataPath SubtractorInA, SubtractorInB;
+    `DataPath SubtractorOut;
+
+    Subtractor subtractor(
+        .dst ( SubtractorOut ),
+        .srcA ( SubtractorInA ),
+        .srcB ( SubtractorInB )
+    );
+
+    initial begin
+        SubtractorInA = 13;
+        SubtractorInB = 14;
+
+        #40
+
+        SubtractorInA = 9;
+        SubtractorInB = 9;
+
+        #20
+
+        $finish;
+    end
+
+    initial
+        $monitor(
+            $stime,
+            " a(%d) + b(%d) = c(%d)",
+            SubtractorInA,
+            SubtractorInB,
+            SubtractorOut
+        );
 
 endmodule
 

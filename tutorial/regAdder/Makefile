@@ -11,12 +11,15 @@ LIBRARY_WORK = $(PROJECT_WORK)/$(LIBRARY_NAME)
 
 # Library name and top-level module to be simulated
 LIBRARY_NAME    = H3_Modules
-TOPLEVEL_MODULE = H3_Simulator 
+TOPLEVEL_MODULE = H3_RegAdderSim 
 
 # Specify source files
 SOURCES = \
-	Sub.v \
-	SubSim.v \
+	RegFile.v \
+	RegAdder.v \
+	Adder.v \
+	RegAdderSim.v \
+
 
 
 
@@ -57,8 +60,9 @@ sim:
 	( cd $(PROJECT_WORK); $(VSIM) $(LIBRARY_NAME).$(TOPLEVEL_MODULE) -do "run -all"; )
 
 # GUI simulation
+# Read wave format by executing "do wave.do"
 sim-gui: 
-	( cd $(PROJECT_WORK); $(MODELSIM) $(LIBRARY_NAME).$(TOPLEVEL_MODULE) )
+	( cd $(PROJECT_WORK); $(MODELSIM) $(LIBRARY_NAME).$(TOPLEVEL_MODULE) -do "do wave.do;";  )
 
 
 

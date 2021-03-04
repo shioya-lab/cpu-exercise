@@ -6,6 +6,13 @@ void sort( int size )
 {
 	int i;
 	for( i = 0; i < size; i++ ){
+		for(int j = i + 1; j < size; j++){
+			if(array[i] > array[j]){
+				int tmp = array[i];
+				array[i] = array[j];
+				array[j] = tmp;
+			}
+		}
 	}
 }
 
