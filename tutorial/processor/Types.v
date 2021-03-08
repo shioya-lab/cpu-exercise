@@ -18,6 +18,9 @@
 `define CONSTANT_POS 0
 `define ConstantPath logic [ `CONSTANT_WIDTH-1 : 0 ]
 
+`define EXPAND_BR_DISPLACEMENT(disp) { disp[ `INSN_ADDR_WIDTH - 2 - 1 : 0 ], 2'b00 }
+
+
 `define RS_POS 21
 `define RD_POS 16
 `define RD_POS 11
