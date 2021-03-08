@@ -16,7 +16,7 @@ module BranchUnit(
         case brCode
         `BR_CODE_EQ brTaken = (regRS == regRT) ? `TRUE : `FALSE;
         `BR_CODE_NE brTaken = (regRS != regRT) ? `TRUE : `FALSE;
-        `BR_CODE_TAKEN: brTaken = `TRUE:
+        `BR_CODE_TAKEN: brTaken = `TRUE;
         `default: brTaken = `FALSE;
         endcase
 

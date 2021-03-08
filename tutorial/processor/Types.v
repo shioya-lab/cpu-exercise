@@ -10,7 +10,7 @@
 `define FUNCT_POS 0
 `define FunctPath logic [ `FUNCT_WIDTH-1 : 0 ]
 
-`define SHAMT_WIDTH 5
+`define SHAMT_WIDTH 6
 `define SHAMT_POS 5
 `define ShamtPath logic [ `SHAMT_POS +: `SHAMT_WIDTH ]
 
@@ -25,14 +25,20 @@
 `define RD_POS 16
 `define RD_POS 11
 
+`define GET_SHIFT(disp) disp[ `SHAMT_POS +: `SHAMT_WIDTH ]
+
 `define OP_CODE_ALU 0
 `define OP_CODE_LD 35
 `define OP_CODE_ST 43
 
 `define OP_CODE_ADDI 8
+`define OP_CODE_ANDI 12
+`define OP_CODE_ORI  13
 `define OP_CODE_BEQ 4
 `define OP_CODE_BNE 5
 
+`define FUNCT_CODE_SLL 0
+`define FUNCT_CODE_SRL 2
 `define FUNCT_CODE_ADD 32
 `define FUNCT_CODE_SUB 34
 `define FUNCT_CODE_AND 36
@@ -42,11 +48,14 @@
 `define ALU_CODE_WIDTH 3
 `define ALUCodePath logic [ `ALU_CODE_WIDTH-1: 0 ]
 
-`define ALU_CODE_ADD 0
-`define ALU_CODE_SUB 1
-`define ALU_CODE_AND 2
-`define ALU_CODE_OR 3
-`define ALU_CODE_SLT 4
+`define ALU_CODE_SLL 0
+`define ALU_CODE_SRL 1
+`define ALU_CODE_ADD 2
+`define ALU_CODE_SUB 3
+`define ALU_CODE_AND 4
+`define ALU_CODE_OR  5
+`define ALU_CODE_XOR 6
+`define ALU_CODE_SLT 7
 
 `define BR_CODE_WIDTH 2
 `define BrCodePath logic [ `BR_CODE_WIDTH-1 : 0 ]
@@ -55,3 +64,6 @@
 `define BR_CODE_TAKEN 1
 `define BR_CODE_EQ 2
 `define BR_CODE_NE 3
+
+`define REG_NUM_WIDTH 5
+`define REG_FILE_SIZE 32
