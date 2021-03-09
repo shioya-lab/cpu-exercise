@@ -10,13 +10,13 @@ module Decoder(
     output `ConstantPath constant,
     output `ALUCodePath aluCode,
     output `BrCodePath brCode,
-    output logic pcScr,
-    output logic regDst,
-    output logic regWrite,
-    output logic aluSrc,
-    output logic memWrite,
+    output logic pcWrEnable,
+    output logic isLoadInsn,
+    output logic isStoreInsn,
     output logic isSrcA_Rt,
-    output logic memRead,
+    output logic isDstRt,
+    output logic rfWrEnable,
+    output logic isALUInConstant,
     input `InsnPath insn,
 );
 
@@ -56,48 +56,54 @@ module Decoder(
         end
 
         case (op)
-            `OP_CODE_LD: memRead = `TRUE;
-            default: memRead = `FALSE;
+            `OP_CODE_LD: isLoadInsn = `TRUE;
+            default: isLoadInsn = `FALSE;
         endcase
 
         case (op)
-            `OP_CODE_ST: memWrite = `TRUE;
-            default: memWrite = `FALSE;
+            `OP_CODE_ST: isStoreInsn = `TRUE;
+            default: isStoreInsn = `FALSE;
         endcase
 
         case(op)
-            `OP_CODE_LD:    regDst = `TRUE;
-            `OP_CODE_ADDI:  regDst = `TRUE;
-            `OP_CODE_ANDI:  regDst = `TRUE;
-            `OP_CODE_ORI:   regDst = `TRUE;
-            default:    regDst = `FALSE;
+            `OP_CODE_LD:    isDstRt = `TRUE;
+            `OP_CODE_ADDI:  isDstRt = `TRUE;
+            `OP_CODE_ANDI:  isDstRt = `TRUE;
+            `OP_CODE_ORI:   isDstRt = `TRUE;
+            default:    isDstRt = `FALSE;
         endcase
 
         case(op)
-            `OP_CODE_LD:    regWrite = `TRUE;
-            `OP_CODE_ALU:   regWrite = `TRUE;
-            `OP_CODE_ANDI:  regWrite = `TRUE;
-            `OP_CODE_ORI:   regWrite = `TRUE;
-            `OP_CODE_ADDI:  regWrite = `TRUE;
-            default:    regWrite = `FALSE;
+            `OP_CODE_LD:    rfWrEnable = `TRUE;
+            `OP_CODE_ALU:   rfWrEnable = `TRUE;
+            `OP_CODE_ANDI:  rfWrEnable = `TRUE;
+            `OP_CODE_ORI:   rfWrEnable = `TRUE;
+            `OP_CODE_ADDI:  rfWrEnable = `TRUE;
+            default:    rfWrEnable = `FALSE;
         endcase
 
         isSrcA_Rt = isShift;
 
         if(isShift) begin
-            aluSrc = `TRUE;
+            isALUInConstant = `TRUE;
         end
         else begin
             case(op):
-                `OP_CODE_ALU: aluSrc = `FALSE;
-                default:    aluSrc = `TRUE;
+                `OP_CODE_ALU: isALUInConstant = `FALSE;
+                default:    isALUInConstant = `TRUE;
             endcase
         end
 
         case(op)
-            `OP_CODE_BEQ: pcScr = `TRUE;
-            `OP_CODE_BNE: pcScr = `TRUE;
-            default: pcScr= `FALSE;
+            `OP_CODE_BEQ:   brCode = `BR_CODE_EQ
+            `OP_CODE_BNE:   brCode = `BR_CODE_NE
+            default:    brCode = `BR_CODE_UNTAKEN
+        endcase
+
+        case(op)
+            `OP_CODE_BEQ: pcWrEnable = `TRUE;
+            `OP_CODE_BNE: pcWrEnable = `TRUE;
+            default: pcWrEnable= `FALSE;
         endcase
     end
 endmodule
