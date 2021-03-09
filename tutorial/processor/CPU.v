@@ -63,14 +63,14 @@ module CPU(
 
 		.clk ( clk ),
 		.rst ( rst ),
-		.addrIn ( brPcOut ),
+		.addrIn ( pcIn ),
 		.wrEnable ( pcWrEnable )
 	);
 
 	BranchUnit branch(
-		.pcOut ( brPcOut ),
+		.pcOut ( pcIn ),
 
-		.pcIn ( pcIn ),
+		.pcIn ( pcOut ),
 		.BrCodePath ( dcBrCode ),
 		.regRS ( dcRS ),
 		.regRT ( dcRT ),
