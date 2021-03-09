@@ -16,7 +16,45 @@ module CPU(
 										// dataAddr で指定したアドレスから読んだ値が入力される．
 );
 	
-	
+	//PC
+	`InsnAddrPath pcOut;
+	`InsnAddrPath pcIn;
+	logic pcWrEnable;
+
+	//IMem
+	`InsnPath imemInsnCode;
+
+	//Decoder
+	`OpPath dcOp;
+	`RegNumPath dcRS;
+	`RegNumPath dcRT;
+	`RegNumPath dcRD;
+	`ShamtPath dcShamt;
+	`FunctPath dcFunct;
+	`ConstantPath dcConstant;
+	`ALUCodePath dcALUCode;
+	`BrCodePath dcBrCode;
+	logic dcIsSrcA_Rt;
+	logic dcIsDstRt;
+	logic dcIsALUInConstant;
+	logic dcIsLoadInsn;
+	logic dcIsStoreInsn;
+
+	//Register files
+	`DataPath rfRdDataS;
+	`DataPath rfRdDataT;
+	`DataPath rfWrData;
+	`RegNumPath rfWrNum;
+	logic rfWrEnable;
+
+	//ALU
+	`DataPath aluOut;
+	`DataPath aluInA;
+	`DataPath aluInB;
+
+	logic brTaken;
+
+
 
 endmodule
 
