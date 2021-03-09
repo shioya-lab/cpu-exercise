@@ -24,6 +24,10 @@ module CPU(
 	//IMem
 	`InsnPath imemInsnCode;
 
+	//Branch Unit
+
+	`InsnAddrPath brPcOut;
+
 	//Decoder
 	`OpPath dcOp;
 	`RegNumPath dcRS;
@@ -54,7 +58,47 @@ module CPU(
 
 	logic brTaken;
 
+	PC pc(
+		.addrOut ( pcOut ),
 
+		.clk ( clk ),
+		.rst ( rst ),
+		.addrIn ( brPcOut ),
+		.wrEnable ( pcWrEnable )
+	);
+
+	BranchUnit branch(
+		.pcOut ( brPcOut ),
+
+		.pcIn ( pcIn ),
+		.BrCodePath ( dcBrCode ),
+		.regRS ( dcRS ),
+		.regRT ( dcRT ),
+		.constant ( dcConstant ),
+	);
+
+	Decoder decoder(
+		.op ( dcOp ),
+		.rs ( dcRS ),
+		.rt ( dcRT ),
+		.rd ( dcRD ),
+		.shamt ( dcShamt ),
+		.funct ( dcFunct ),
+		.constant ( dcConstant ),
+		.aluCode ( dcALUCode ),
+		.brCode ( dcBrCode ),
+		.pcWrEnable ( pcWrEnable ),
+		.isLoadInsn ( dcIsLoadInsn ),
+		.isStoreInsn ( dcIsStoreInsn ),
+		.isSrcA_Rt ( dcIsSrcA_Rt ),
+		.isDstRt ( dcIsDstRt ),
+		.rfWrEnable ( rfWrEnable ),
+		.isALUInConstant ( dcIsALUInConstant ),
+
+		.insn ( insn )
+	);
+
+	RegisterFile regFile
 
 endmodule
 
