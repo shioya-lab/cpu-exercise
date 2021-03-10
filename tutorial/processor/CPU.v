@@ -69,7 +69,6 @@ module CPU(
 
 	BranchUnit branch(
 		.pcOut ( pcIn ),
-
 		.pcIn ( pcOut ),
 		.BrCodePath ( dcBrCode ),
 		.regRS ( dcRS ),
@@ -95,10 +94,42 @@ module CPU(
 		.rfWrEnable ( rfWrEnable ),
 		.isALUInConstant ( dcIsALUInConstant ),
 
-		.insn ( insn )
+		.insn ( imemInsnCode )
 	);
 
-	RegisterFile regFile
+	RegisterFile regFile(
+		.rdDataA ( rfRdDataS ),
+		.rdDataB ( rfRdDataT ),
+
+		.clk ( clk ),
+		.rdNumA ( dcRS ),
+		.rdNumB ( dcRT ),
+		.wrData ( rfWrData )
+		.wrNum ( rfWrNum )
+		.wrEnable ( rfWrEnable )
+	)
+
+	ALU alu(
+		.aluOut ( aluOut )
+		
+		.aluInA ( aluInA )
+		.aluInB ( aluInB )
+		.code ( dcALUCode )
+	)
+
+	always_comb begin
+		imemInsnCode = insn;
+		insnAddr = pcOut;
+
+		dataOut = rfRdDataT;
+		dataAddr = rfRdDataS[ `DATA_ADDR_WIDTH - 1 : 0 ] + `EXPAND_ADDRESS( dcConstant );
+
+		rfWrData = dcIsLoadInsn ? dataIn : aluOut;
+		aluInA = dcIsSrcA_Rt ? rfRdDataT : rfRdDataS;
+		aluInB = dcIsALUInConstant ? dcConstant : rfRdDataT;
+
+		dataWrEnable = dcIsStoreInsn;
+	end
 
 endmodule
 
