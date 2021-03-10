@@ -12,7 +12,7 @@
 
 `define SHAMT_WIDTH 6
 `define SHAMT_POS 5
-`define ShamtPath logic [ `SHAMT_POS +: `SHAMT_WIDTH ]
+`define ShamtPath logic [ `SHAMT_POS + `SHAMT_WIDTH - 1 : `SHAMT_POS ]
 
 `define CONSTANT_WIDTH 16
 `define CONSTANT_POS 0
@@ -23,7 +23,7 @@
 
 `define RS_POS 21
 `define RD_POS 16
-`define RD_POS 11
+`define RT_POS 11
 
 `define GET_SHIFT(disp) disp[ `SHAMT_POS +: `SHAMT_WIDTH ]
 
@@ -67,3 +67,6 @@
 
 `define REG_NUM_WIDTH 5
 `define REG_FILE_SIZE 32
+`define RegNumPath logic [ `REG_NUM_WIDTH-1:0 ]
+
+`define EXPAND_ADDRESS(disp) disp[ `DATA_ADDR_WIDTH - 1 : 0]

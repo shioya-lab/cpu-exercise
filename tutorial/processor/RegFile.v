@@ -12,9 +12,9 @@ module RegisterFile(
     input `DataPath wrData,
     input `RegNumPath wrNum,
 
-    input logic wrEnable,
+    input logic wrEnable
 );
-    `Data storage[ 0 : `REG_FILE_SIZE - 1 ];
+    `DataPath storage[ 0 : `REG_FILE_SIZE - 1 ];
 
     always_ff @( posedge clk) begin
         if (wrEnable) begin

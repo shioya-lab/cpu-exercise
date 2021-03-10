@@ -10,21 +10,22 @@ module ALU(
 
     always_comb begin
         case (code)
-        `ALU_CODE_SLL:
-            aluOut = aluInA << `GET_SHIFT(aluInB);
-        `ALU_CODE_SRL:
-            aluOut = aluInB >> `GET_SHIFT(aluInB);
-        `ALU_CODE_ADD:
-            aluout = aluInA + aluInB;
-        `ALU_CODE_SUB:
-            aluout = aluInA - aluInB;
-        `ALU_CODE_AND:
-            aluout = aluInA & aluInB;
-        `ALU_CODE_OR:
-            aluout = aluInA | aluInB;
-        `ALU_CODE_XOR:
-            aluOut = aluInA ^ aluInB;
-        `ALU_CODE_SLT:
-            aluout = aluInA < aluInB ? `TRUE : `FALSE;
-
-end module
+            `ALU_CODE_SLL:
+                aluOut = aluInA << `GET_SHIFT(aluInB);
+            `ALU_CODE_SRL:
+                aluOut = aluInB >> `GET_SHIFT(aluInB);
+            `ALU_CODE_ADD:
+                aluOut = aluInA + aluInB;
+            `ALU_CODE_SUB:
+                aluOut = aluInA - aluInB;
+            `ALU_CODE_AND:
+                aluOut = aluInA & aluInB;
+            `ALU_CODE_OR:
+                aluOut = aluInA | aluInB;
+            `ALU_CODE_XOR:
+                aluOut = aluInA ^ aluInB;
+            `ALU_CODE_SLT:
+                aluOut = aluInA < aluInB ? `TRUE : `FALSE;
+        endcase
+    end
+endmodule

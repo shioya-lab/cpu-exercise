@@ -69,7 +69,7 @@ module CPU(
 		.BrCodePath ( dcBrCode ),
 		.regRS ( dcRS ),
 		.regRT ( dcRT ),
-		.constant ( dcConstant ),
+		.constant ( dcConstant )
 	);
 
 	Decoder decoder(
@@ -100,18 +100,18 @@ module CPU(
 		.clk ( clk ),
 		.rdNumA ( dcRS ),
 		.rdNumB ( dcRT ),
-		.wrData ( rfWrData )
-		.wrNum ( rfWrNum )
+		.wrData ( rfWrData ),
+		.wrNum ( rfWrNum ),
 		.wrEnable ( rfWrEnable )
-	)
+	);
 
 	ALU alu(
-		.aluOut ( aluOut )
+		.aluOut ( aluOut ),
 		
-		.aluInA ( aluInA )
-		.aluInB ( aluInB )
+		.aluInA ( aluInA ),
+		.aluInB ( aluInB ),
 		.code ( dcALUCode )
-	)
+	);
 
 	always_comb begin
 		imemInsnCode = insn;

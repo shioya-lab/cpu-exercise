@@ -17,8 +17,10 @@ module Decoder(
     output logic isDstRt,
     output logic rfWrEnable,
     output logic isALUInConstant,
-    input `InsnPath insn,
+    input `InsnPath insn
 );
+
+    logic isShift;
 
     always_comb begin
         op = insn[ `OP_POS +: `OP_WIDTH ];
@@ -38,8 +40,8 @@ module Decoder(
                 `FUNCT_CODE_SUB:    aluCode = `ALU_CODE_SUB;
                 `FUNCT_CODE_AND:    aluCode = `ALU_CODE_AND;
                 `FUNCT_CODE_OR:     aluCode = `ALU_CODE_OR;
-                `FUNCT_CODE_SLT     aluCode = `ALU_CODE_SLT;
-                `FUNCT_CODE_SRL     aluCode = `ALU_CODE_SRL;
+                `FUNCT_CODE_SLT:     aluCode = `ALU_CODE_SLT;
+                `FUNCT_CODE_SRL:     aluCode = `ALU_CODE_SRL;
                 default:    aluCode = `ALU_CODE_SLL;
             endcase
 
@@ -88,16 +90,16 @@ module Decoder(
             isALUInConstant = `TRUE;
         end
         else begin
-            case(op):
+            case(op)
                 `OP_CODE_ALU: isALUInConstant = `FALSE;
                 default:    isALUInConstant = `TRUE;
             endcase
         end
 
         case(op)
-            `OP_CODE_BEQ:   brCode = `BR_CODE_EQ
-            `OP_CODE_BNE:   brCode = `BR_CODE_NE
-            default:    brCode = `BR_CODE_UNTAKEN
+            `OP_CODE_BEQ:   brCode = `BR_CODE_EQ;
+            `OP_CODE_BNE:   brCode = `BR_CODE_NE;
+            default:    brCode = `BR_CODE_UNTAKEN;
         endcase
 
         case(op)
