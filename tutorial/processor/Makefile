@@ -15,14 +15,20 @@ TOPLEVEL_MODULE = H3_MainSim
 
 # Specify source files
 SOURCES = \
+	ALU.v \
+	Branch.v \
 	ClockDivider.v \
 	CPU.v \
+	Decoder.v \
 	DMem.v \
 	IMem.v \
 	Main.v \
 	IOCtrl.v \
 	LEDDrv.v \
 	MainSim.v \
+	PC.v \
+	RegFile.v \
+	Types.v \
 
 
 

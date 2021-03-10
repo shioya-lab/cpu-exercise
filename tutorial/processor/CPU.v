@@ -24,10 +24,6 @@ module CPU(
 	//IMem
 	`InsnPath imemInsnCode;
 
-	//Branch Unit
-
-	`InsnAddrPath brPcOut;
-
 	//Decoder
 	`OpPath dcOp;
 	`RegNumPath dcRS;
@@ -125,6 +121,8 @@ module CPU(
 		dataAddr = rfRdDataS[ `DATA_ADDR_WIDTH - 1 : 0 ] + `EXPAND_ADDRESS( dcConstant );
 
 		rfWrData = dcIsLoadInsn ? dataIn : aluOut;
+		rfWrNum = dcIsDstRt ? dcRT : dcRD;
+
 		aluInA = dcIsSrcA_Rt ? rfRdDataT : rfRdDataS;
 		aluInB = dcIsALUInConstant ? dcConstant : rfRdDataT;
 
