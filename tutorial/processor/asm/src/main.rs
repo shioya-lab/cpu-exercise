@@ -53,7 +53,8 @@ fn getreg(inp :&str, with_disp: bool) -> Result<(u32, i16)>{
         let bracket_end = inp.find(")");
         match (bracket_beg, bracket_end) {
             (Some(beg), Some(end)) => {
-                let disp = inp[..beg].parse()?;
+                let without_prefix = &inp[..beg].trim_start_matches("0x");
+                let disp = i16::from_str_radix(without_prefix, 16)?;
                 let regnum = inp[(beg+2)..end].parse()?;
                 Ok((regnum, disp))
             }
