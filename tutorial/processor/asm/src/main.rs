@@ -100,7 +100,7 @@ fn run <R: BufRead>(inreader : R, mut out :File) -> Result<()>{
 
                 inst = inst | (rs << 21);
                 inst = inst | (rt << 16);
-                inst = inst | (disp as u32);
+                inst = inst | ((disp as u32) & 0x0000ffff);
 
                 write!(out, "{:08x}\n", inst)?;
             }
@@ -168,7 +168,9 @@ fn run <R: BufRead>(inreader : R, mut out :File) -> Result<()>{
                         inst = inst | (rs << 21);
                         inst = inst | (rt << 16);
                         let imm : i16 = tokens[3].parse()?;
-                        inst = inst | (imm as u32);
+                        println!("{:b}", imm);
+                        println!("{:b}", (imm as u32));
+                        inst = inst | ((imm  as u32) & 0x0000ffff);
                         write!(out, "{:08x}\n", inst)?;
                     }
                     "bne" | "beq" => {
@@ -184,7 +186,7 @@ fn run <R: BufRead>(inreader : R, mut out :File) -> Result<()>{
                         inst = inst | (rt << 16);
 
                         let imm : i16 = tokens[3].parse()?;
-                        inst = inst | (imm as u32);
+                        inst = inst | ((imm  as u32) & 0x0000ffff);
                         write!(out, "{:08x}\n", inst)?;
                     }
                     _ => {
