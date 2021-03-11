@@ -117,22 +117,22 @@ fn run <R: BufRead>(inreader : R, mut out :File) -> Result<()>{
                         inst = inst | (rd << 11);
                         inst = inst | (0 << 6);
                         if tokens[0] == "add"{
-                            inst = inst | (2);
+                            inst = inst | (32);
                         }
                         else if tokens[0] == "sub"{
-                            inst = inst | (3);
+                            inst = inst | (34);
                         }
                         else if tokens[0] == "and"{
-                            inst = inst | (4);
+                            inst = inst | (36);
                         }
                         else if tokens[0] == "or"{
-                            inst = inst | (5);
+                            inst = inst | (37);
                         }
                         else if tokens[0] == "xor"{
-                            inst = inst | (6);
+                            inst = inst | (38);
                         }
                         else if tokens[0] == "slt"{
-                            inst = inst | (7);
+                            inst = inst | (42);
                         }
                         write!(out, "{:08x}\n", inst)?;
                     },
@@ -149,15 +149,15 @@ fn run <R: BufRead>(inreader : R, mut out :File) -> Result<()>{
                             inst = inst | (0);
                         }
                         else if tokens[0] == "srl"{
-                            inst = inst | (1);
+                            inst = inst | (2);
                         }
                         write!(out, "{:08x}\n", inst)?;
                     }
                     "andi" | "addi" | "ori" => {
-                        if tokens[0] == "andi"{
+                        if tokens[0] == "addi"{
                             inst = inst | (8 << 26);
                         }
-                        else if tokens[0] == "addi"{
+                        else if tokens[0] == "andi"{
                             inst = inst | (12 << 26);
                         }
                         else if tokens[0] == "ori"{

@@ -66,9 +66,9 @@ module CPU(
 	BranchUnit branch(
 		.pcOut ( pcIn ),
 		.pcIn ( pcOut ),
-		.BrCodePath ( dcBrCode ),
-		.regRS ( dcRS ),
-		.regRT ( dcRT ),
+		.brCode ( dcBrCode ),
+		.regRS ( rfRdDataS ),
+		.regRT ( rfRdDataT ),
 		.constant ( dcConstant )
 	);
 

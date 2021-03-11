@@ -22,8 +22,8 @@
 
 
 `define RS_POS 21
-`define RD_POS 16
-`define RT_POS 11
+`define RT_POS 16
+`define RD_POS 11
 
 `define GET_SHIFT(disp) disp[ `SHAMT_POS +: `SHAMT_WIDTH ]
 
@@ -43,6 +43,7 @@
 `define FUNCT_CODE_SUB 34
 `define FUNCT_CODE_AND 36
 `define FUNCT_CODE_OR 37
+`define FUNCT_CODE_XOR 38
 `define FUNCT_CODE_SLT 42
 
 `define ALU_CODE_WIDTH 3

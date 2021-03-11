@@ -42,6 +42,7 @@ module Decoder(
                 `FUNCT_CODE_OR:     aluCode = `ALU_CODE_OR;
                 `FUNCT_CODE_SLT:     aluCode = `ALU_CODE_SLT;
                 `FUNCT_CODE_SRL:     aluCode = `ALU_CODE_SRL;
+                `FUNCT_CODE_XOR:     aluCode = `ALU_CODE_XOR;
                 default:    aluCode = `ALU_CODE_SLL;
             endcase
 

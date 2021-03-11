@@ -20,6 +20,7 @@ module RegisterFile(
         if (wrEnable) begin
             storage[wrNum] <= wrData;
         end
+        storage[0] = 32'b0;
     end
 
     always_comb begin
