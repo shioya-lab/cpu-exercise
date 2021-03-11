@@ -54,7 +54,6 @@ fn getreg(inp :&str, with_disp: bool) -> Result<(u32, i16)>{
         match (bracket_beg, bracket_end) {
             (Some(beg), Some(end)) => {
                 let disp = inp[..beg].parse()?;
-                println!("{}",disp);
                 let regnum = inp[(beg+2)..end].parse()?;
                 Ok((regnum, disp))
             }
@@ -168,8 +167,6 @@ fn run <R: BufRead>(inreader : R, mut out :File) -> Result<()>{
                         inst = inst | (rs << 21);
                         inst = inst | (rt << 16);
                         let imm : i16 = tokens[3].parse()?;
-                        println!("{:b}", imm);
-                        println!("{:b}", (imm as u32));
                         inst = inst | ((imm  as u32) & 0x0000ffff);
                         write!(out, "{:08x}\n", inst)?;
                     }
