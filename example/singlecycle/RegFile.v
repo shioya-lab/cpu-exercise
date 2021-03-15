@@ -36,6 +36,10 @@ module RegisterFile(
 		end
 	end
 
+	always_comb begin
+		strage[0] = 32'b0; //zero register
+	end
+
 	// 読み出し
 	always_comb begin
 		rdDataA = strage[ rdNumA ];

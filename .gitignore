@@ -3,3 +3,6 @@ transcript
 ModelSim/
 QuartusPrime/
 QuartusSim/
+tutorial/processor/asm/target/*
+tutorial/processor/asm/asm.txt
+tutorial/processor/asm/out.txt

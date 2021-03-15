@@ -3,6 +3,7 @@
 //
 
 `include "Types.v" 
+`timescale 1ns/1ns
 
 
 module DMem(
@@ -17,7 +18,9 @@ module DMem(
 );
 
 `ifdef MODEL_TECH
-	
+
+
+	parameter CYCLE_TIME = 200;
 	//
 	// ModelSim 用コード
 	//
@@ -50,6 +53,8 @@ module DMem(
 	integer i;
 	initial	begin
 		$readmemh( "../DMem.dat", mem );
+		#(CYCLE_TIME*1000000 * 20)
+		$writememh( "../Sorted.dat", mem);
 	end
 
 `else 
