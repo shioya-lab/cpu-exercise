@@ -1,69 +1,78 @@
 H3_CYGWIN_MODELSIM_PATH = $(shell cygpath -u "$$H3_MODELSIM_PATH")
 
+VERILATOR = verilator
+VIVADO=$(HOME)/opt/cad/xilinx/Vivado/2019.2/bin
+
 VLOG = $(H3_CYGWIN_MODELSIM_PATH)/vlog.exe
 VLIB = $(H3_CYGWIN_MODELSIM_PATH)/vlib.exe
 VSIM = $(H3_CYGWIN_MODELSIM_PATH)/vsim.exe -c
 MODELSIM = $(H3_CYGWIN_MODELSIM_PATH)/modelsim.exe
 
-PROJECT_WORK = ModelSim
+PROJECT_WORK = VivadoSim
 LIBRARY_WORK = $(PROJECT_WORK)/$(LIBRARY_NAME)
+TEST_BENCH_MODULE = AdderSim
 
+# Simulation tools
+XVLOG = $(VIVADO)/xvlog
+XELAB = $(VIVADO)/xelab
+XSIM  = $(VIVADO)/xsim
 
 # Library name and top-level module to be simulated
-LIBRARY_NAME    = H3_Modules
-TOPLEVEL_MODULE = H3_Simulator 
+LIBRARY_NAME    = AdderSim
+TOPLEVEL_MODULE = AdderSim 
+
+TOP = AdderSim.sv
+SOURCE_ROOT = /work/cpu-exercise/tutorial/adder/
 
 # Specify source files
 SOURCES = \
-	Adder.v \
-	AdderSim.v \
+	Types.sv \
+	Adder.sv \
+	AdderSim.sv \
 
-
-
-DEPS = \
-	$(SOURCES) \
-
-#	+incdir+../../Src 
+DEPS_RTL = \
+	$(SOURCES:%=$(SOURCE_ROOT)%)
 
 OPTIONS = \
-	-lint \
-	-pedanticerrors \
-	+librescan \
-	-sv -nocovercells \
-	-work $(LIBRARY_WORK) \
-	#-incr \
+	--binary \
+	-sv \
+	--top-module $(TOPLEVEL_MODULE) \
+	-j 0 \
+	-Wall \
+	--trace \
+	+define+VERILATOR_SIMULATION \
+	-Wno-IMPORTSTAR \
 
+all: obj_dir/VAdderSim
 
+obj_dir/VAdderSim: $(SOURCES)
+	$(VERILATOR) $(OPTIONS) $(SOURCES)
 
-all: $(DEPS) $(LIBRARY_WORK)
-	$(VLOG) $(OPTIONS) $(SOURCES)
-
+run: obj_dir/VAdderSim
+	obj_dir/VAdderSim
 
 # vlib LIBRARY
 clean:
-	mkdir -p $(PROJECT_WORK)
-	rm -f -r $(LIBRARY_WORK)
-	( cd $(PROJECT_WORK); $(VLIB) $(LIBRARY_NAME); )
+	rm -rf obj_dir $(PROJECT_WORK) wave.vcd
 
 lib: clean
 
 $(LIBRARY_WORK): Makefile
 	make clean
 
+# XSIM_OPTIONS = -debug all
 
-# simulation
-# vsim LIBRARY -do "run -all"
-sim: 
-	( cd $(PROJECT_WORK); $(VSIM) $(LIBRARY_NAME).$(TOPLEVEL_MODULE) -do "run -all"; )
+# Vivado sim may require the following additonal components:
+# sudo apt install libncurses5 libtinfo5
+vivado-compile: $(SOURCES)
+	mkdir $(PROJECT_WORK) -p
+	# compile
+	cd $(PROJECT_WORK) && $(XVLOG) -sv $(XVLOG_OPTIONS) -i $(SOURCE_ROOT) $(DEPS_RTL) 
+	# elaboration
+	cd $(PROJECT_WORK) && $(XELAB) --debug all -relax $(TEST_BENCH_MODULE)
 
-# GUI simulation
-# Read wave format by executing "do wave.do" and run simulation 50ns
-sim-gui: 
-	( cd $(PROJECT_WORK); $(MODELSIM) $(LIBRARY_NAME).$(TOPLEVEL_MODULE) -do "do wave.do; run 50ns"; )
+vivado-sim: vivado-compile
+	cd $(PROJECT_WORK) && $(XSIM) -runall $(XSIM_OPTIONS) $(TEST_BENCH_MODULE)
 
-
-
-
-#	( cd $(WORK); $(VLOG) $(OPTIONS) $(DEPS); )
-
-
+vivado-sim-gui: vivado-compile
+	cd $(PROJECT_WORK) && $(XSIM) -gui $(XSIM_OPTIONS) $(TEST_BENCH_MODULE)
