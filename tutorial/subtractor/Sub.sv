@@ -4,7 +4,7 @@
 
 
 // 基本的な型を定義したファイルの読み込み
-`include "Types.v" 
+import Types::*;
 
 
 module Subtractor();      
