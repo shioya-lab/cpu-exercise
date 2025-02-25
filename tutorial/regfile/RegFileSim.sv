@@ -2,22 +2,14 @@
 // レジスタ・ファイルの検証用モジュール
 //
 
-
-
 // 基本的な型を定義したファイルの読み込み
-`include "Types.v" 
-
-
-
-// シミュレーションの単位時間の設定
-// #~ と書いた場合，この時間が経過する．
-`timescale 1ns/1ns
+import Types::*;
 
 
 //
 // レジスタ・ファイルの検証用のモジュール
 //
-module H3_Simulator;
+module RegFileSim;
 
 	parameter CYCLE_TIME = 10; // 1サイクルを 10ns に設定
 
@@ -25,14 +17,14 @@ module H3_Simulator;
 
 	logic clk;				// クロック
 	
-	`DataPath rfRdDataA;	// 読み出しデータA
-	`DataPath rfRdDataB;	// 読み出しデータB
+	DataPath rfRdDataA;	// 読み出しデータA
+	DataPath rfRdDataB;	// 読み出しデータB
 
-	`RegNumPath rfRdNumA;	// 読み出しレジスタ番号A
-	`RegNumPath rfRdNumB;	// 読み出しレジスタ番号B
+	RegNumPath rfRdNumA;	// 読み出しレジスタ番号A
+	RegNumPath rfRdNumB;	// 読み出しレジスタ番号B
 
-	`DataPath   rfWrData;	// 書き込みデータ
-	`RegNumPath rfWrNum;	// 書き込みレジスタ番号
+	DataPath   rfWrData;	// 書き込みデータ
+	RegNumPath rfWrNum;	// 書き込みレジスタ番号
 	logic       rfWrEnable;	// 書き込み制御 1の場合，書き込みを行う
 
 	RegisterFile regFile(
@@ -48,13 +40,13 @@ module H3_Simulator;
 
 	// クロック
 	initial begin 
-		clk <= 1'b1;
-		cycle <= 0;
+		clk = 1'b1;
+		cycle = 0;
 		
 		// 半サイクルごとに clk を反転
 	    forever #(CYCLE_TIME / 2) begin
-	    	clk <= !clk ;
-	    	cycle <= cycle + 1;
+	    	clk = !clk ;
+	    	cycle = cycle + 1;
 	    end
 	end
 
