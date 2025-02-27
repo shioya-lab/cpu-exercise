@@ -1,79 +1,77 @@
-H3_CYGWIN_MODELSIM_PATH = $(shell cygpath -u "$$H3_MODELSIM_PATH")
 
-VLOG = $(H3_CYGWIN_MODELSIM_PATH)/vlog.exe
-VLIB = $(H3_CYGWIN_MODELSIM_PATH)/vlib.exe
-VSIM = $(H3_CYGWIN_MODELSIM_PATH)/vsim.exe
-MODELSIM = $(H3_CYGWIN_MODELSIM_PATH)/modelsim.exe
+# Top-level module to be simulated
+TOPLEVEL_MODULE = MainSim 
 
-PROJECT_WORK = ModelSim
-LIBRARY_WORK = $(PROJECT_WORK)/$(LIBRARY_NAME)
-
-
-# ライブラリ名とトップレベルモジュール（シミュレーション対象）
-LIBRARY_NAME    = H3_Modules
-TOPLEVEL_MODULE = H3_MainSim 
-
-# コンパイル対象のファイル
+# Specify source files
 SOURCES = \
-	ALU.v \
-	Branch.v \
-	ClockDivider.v \
-	CPU.v \
-	Decoder.v \
-	DMem.v \
-	IMem.v \
-	IOCtrl.v \
-	LEDDrv.v \
-	Main.v \
-	MainSim.v \
-	PC.v \
-	RegFile.v \
-	Types.v \
+	BasicTypes.sv \
+	Types.sv \
+	ALU.sv \
+	Branch.sv \
+	ClockDivider.sv \
+	CPU.sv \
+	Decoder.sv \
+	DMem.sv \
+	IMem.sv \
+	IOCtrl.sv \
+	LEDDrv.sv \
+	Main.sv \
+	MainSim.sv \
+	PC.sv \
+	RegFile.sv \
+
+SOURCE_ROOT = $(CPU_EXERCISE_ROOT)/example/singlecycle/
+DEPS_RTL = \
+	$(SOURCES:%=$(SOURCE_ROOT)%)
+
+VERILATOR_OPTIONS = \
+	--binary \
+	-sv \
+	--top-module $(TOPLEVEL_MODULE) \
+	-j 0 \
+	--trace \
+	--trace-structs \
+	+define+VERILATOR_SIMULATION \
 
 
-DEPS = \
-	$(SOURCES) \
+all: obj_dir/V$(TOPLEVEL_MODULE)
 
-#	+incdir+../../Src 
+obj_dir/V$(TOPLEVEL_MODULE): $(SOURCES)
+	$(VERILATOR) $(VERILATOR_OPTIONS) $(DEPS_RTL)
 
-OPTIONS = \
-	-lint \
-	-pedanticerrors \
-	+librescan \
-	-sv -nocovercells \
-	-work $(LIBRARY_WORK) \
-	#-incr \
+sim: obj_dir/V$(TOPLEVEL_MODULE)
+	$<
 
+view: wave.vcd
+	gtkwave $<&
 
-
-all: $(DEPS) $(LIBRARY_WORK)
-	$(VLOG) $(OPTIONS) $(SOURCES)
+wave.vcd: obj_dir/V$(TOPLEVEL_MODULE)
+	$(MAKE) sim
 
 
-# vlib LIBRARY
 clean:
-	mkdir $(PROJECT_WORK) -p
-	rm -f -r $(LIBRARY_WORK)
-	( cd $(PROJECT_WORK); $(VLIB) $(LIBRARY_NAME); )
-
-lib: clean
-
-$(LIBRARY_WORK): Makefile
-	make clean
+	rm -rf obj_dir $(VIVADO_PROJECT_WORK) wave.vcd
 
 
-# simulation
-# vsim LIBRARY -do "run -all"
-sim: 
-	( cd $(PROJECT_WORK); $(VSIM) $(LIBRARY_NAME).$(TOPLEVEL_MODULE) -do "run -all"; )
+# Vivado sim may require the following additonal components:
+# sudo apt install libncurses5 libtinfo5
 
-# do wave.do で 波形フォーマットを読み込む
-sim-gui: 
-	( cd $(PROJECT_WORK); $(MODELSIM) $(LIBRARY_NAME).$(TOPLEVEL_MODULE) ;  )
+VIVADO_PROJECT_WORK = VivadoSim
 
+# Simulation tools
+XVLOG = $(VIVADO_BIN)/xvlog
+XELAB = $(VIVADO_BIN)/xelab
+XSIM  = $(VIVADO_BIN)/xsim
 
+vivado-compile: $(SOURCES)
+	mkdir $(VIVADO_PROJECT_WORK) -p
+	# compile
+	cd $(VIVADO_PROJECT_WORK) && $(XVLOG) -sv $(XVLOG_OPTIONS) -i $(SOURCE_ROOT) $(DEPS_RTL) 
+	# elaboration
+	cd $(VIVADO_PROJECT_WORK) && $(XELAB) --debug all -relax $(TOPLEVEL_MODULE)
 
+vivado-sim: vivado-compile
+	cd $(VIVADO_PROJECT_WORK) && $(XSIM) -runall $(XSIM_OPTIONS) $(TOPLEVEL_MODULE)
 
-#	( cd $(WORK); $(VLOG) $(OPTIONS) $(DEPS); )
-
-
+vivado-sim-gui: vivado-compile
+	cd $(VIVADO_PROJECT_WORK) && $(XSIM) -gui $(XSIM_OPTIONS) $(TOPLEVEL_MODULE)
