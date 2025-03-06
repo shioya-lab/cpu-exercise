@@ -27,16 +27,17 @@ module CPU(
     InsnPath imemInsnCode;        // 命令コード
     
     // Decoder
+    OpInfo dcOpinfo;
     OpPath dcOp;                // OP フィールド
-    RegNumPath dcRS;            // RS フィールド
-    RegNumPath dcRT;            // RT フィールド
+    RegNumPath rs1;            // RS フィールド
+    RegNumPath rs2;            // RT フィールド
     RegNumPath dcRD;            // RD フィールド
     ShamtPath dcShamt;            // SHAMT フィールド
     FunctPath dcFunct;            // FUNCT フィールド
     ConstantPath dcConstat;    // CONSTANT フィールド
 
     // Controll
-    ALUCodePath dcALUCode;        // ALU の制御コード
+    ALUCodePath aluCode;        // ALU の制御コード
     BrCodePath dcBrCode;        // ブランチの制御コード
     logic dcIsSrcA_Rt;            // ソースの1個目が Rt かどうか
     logic dcIsDstRt;            // ディスティネーションがRtかどうか
@@ -45,8 +46,8 @@ module CPU(
     logic dcIsStoreInsn;        // ストア命令かどうか
 
     // レジスタ・ファイル
-    DataPath rfRdDataS;        // 読み出しデータ rs
-    DataPath rfRdDataT;        // 読み出しデータ rt
+    DataPath rfRdData1;        // 読み出しデータ rs
+    DataPath rfRdData2;        // 読み出しデータ rt
     DataPath   rfWrData;        // 書き込みデータ
     RegNumPath rfWrNum;        // 書き込み番号
     logic       rfWrEnable;        // 書き込み制御 1の場合，書き込みを行う
@@ -72,44 +73,29 @@ module CPU(
     BranchUnit branch(
         pcIn,    // BranchUnit への入力は in と out が逆になるのを注意
         pcOut,
-        dcBrCode,
-        rfRdDataS,
-        rfRdDataT,
+        dcOpinfo.funct3,
+        rfRdData1,
+        rfRdData2,
         dcConstat
     );
     
 
     // Decoder
     Decoder decoder(
-        dcOp,
-        dcRS,
-        dcRT,
-        dcRD,
-        dcShamt,
-        dcFunct,
-        dcConstat,    
-        dcALUCode,
-        dcBrCode,
-        pcWrEnable,            // PC 書き込みを行うかどうか
-        dcIsLoadInsn,        // ロード命令かどうか
-        dcIsStoreInsn,        // ストア命令かどうか
-        dcIsSrcA_Rt,        // ソースの1個目が Rt かどうか
-        dcIsDstRt,            // ディスティネーションがRtかどうか
-        rfWrEnable,            // ディスティネーション書き込みを行うかどうか
-        dcIsALUInConstant,    // ALU の入力が Constant かどうか
+        dcOpinfo,
         imemInsnCode
     );
     
     // RegisterFile
     RegisterFile regFile(
         clk,
-        rfRdDataS,
-        rfRdDataT,
-        dcRS,
-        dcRT,
+        rfRdData1,
+        rfRdData2,
+        dcOpinfo.rs1,
+        dcOpinfo.rs2,
         rfWrData,
         rfWrNum,
-        rfWrEnable
+        dcOpinfo.regWrEnable
     );
     
     // ALU
@@ -117,7 +103,7 @@ module CPU(
         aluOut,
         aluInA,
         aluInB,
-        dcALUCode
+        aluCode
     );
     
 
@@ -129,18 +115,19 @@ module CPU(
         insnAddr     = pcOut;
         
         // Data memory
-        dataOut  = rfRdDataT;
-        dataAddr = rfRdDataS[ DATA_ADDR_WIDTH - 1 : 0 ] + EXPAND_ADDRESS( dcConstat );
+        dataOut  = rfRdData2;
+        dataAddr = rfRdData1[ DATA_ADDR_WIDTH - 1 : 0 ] + EXPAND_ADDRESS( dcOpinfo.constant );
         
         // Register write data
-        rfWrData = dcIsLoadInsn ? dataIn : aluOut;
+        rfWrData = dcOpinfo.isLoad ? dataIn : aluOut;
         
         // Register write num
-        rfWrNum = dcIsDstRt ? dcRT : dcRD;
+        rfWrNum = dcOpinfo.rd;
 
         // ALU
-        aluInA = dcIsSrcA_Rt ? rfRdDataT : rfRdDataS;
-        aluInB = dcIsALUInConstant ? dcConstat : rfRdDataT;
+        aluInA = rfRdData1;
+        aluInB = dcOpinfo.isALUInConstant ? dcOpinfo.constant : rfRdData2;
+        aluCode = dcOpinfo.funct3;
 
         // DMem write enable
         dataWrEnable = dcIsStoreInsn;

@@ -32,7 +32,7 @@ module RegisterFile(
     // クロックの立ち上がりによって書き込みが行われる と言う動作を書くことで，
     // コンパイラはこれを順序回路だと解釈する．
     always_ff @( posedge clk ) begin
-        if ( wrEnable ) begin            // 書き込み制御
+        if ( wrEnable && wrNum != '0 ) begin            // 書き込み制御
             storage[ wrNum ] <= wrData;    // 順序回路では，ノンブロッキング代入で
         end
     end

@@ -37,8 +37,8 @@ parameter INSN_MEM_SIZE   = 512;
 // --- データ・パス
 //
 
-// データ幅は16bit
-parameter DATA_WIDTH = 16;
+// データ幅は32bit
+parameter DATA_WIDTH = 32;
 
 // データパス
 typedef logic [ DATA_WIDTH-1:0 ] DataPath;
@@ -46,11 +46,11 @@ typedef logic [ DATA_WIDTH-1:0 ] DataPath;
 // データのアドレス幅 15bit
 // メモリ : $0000-$3fff
 // IO     : $4000-$7fff
-parameter DATA_ADDR_WIDTH = 15;
+parameter DATA_ADDR_WIDTH = 16;
 typedef logic [ DATA_ADDR_WIDTH-1:0 ] DataAddrPath;
 
-// 16bit (2 byte) = アドレスのオフセットが 1 bit
-parameter DATA_MEM_OFFSET = 1;
+// 32bit (4 byte) = アドレスのオフセットが 2 bit
+parameter DATA_MEM_OFFSET = $clog2(DATA_WIDTH/8);
 
 // データメモリのエントリ数（ 2^13 = 8192エントリ ）
 parameter DATA_MEM_ADDR_WIDTH = 13;
@@ -175,8 +175,8 @@ typedef logic [ CYCLE_WIDTH-1 : 0 ] CyclePath;
 //
 
 // アドレスのこのビットが立っていたらIO
-parameter IO_ADDR_BIT_POS = 14;
-parameter IO_ADDR_BEGIN   = 14'h4000;
+parameter IO_ADDR_BIT_POS = 15;
+parameter IO_ADDR_BEGIN   = 15'h8000;
 parameter IO_ADDR_WIDTH   = 5;
 
 function automatic logic [IO_ADDR_WIDTH-1:0] MAKE_IO_ADDR(input logic [IO_ADDR_WIDTH-1:0] address); 

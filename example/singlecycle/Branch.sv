@@ -11,8 +11,8 @@ module BranchUnit(
         
     input InsnAddrPath pcIn,
     input BrCodePath    brCode,
-    input DataPath     regRS,
-    input DataPath     regRT,
+    input DataPath     rs1,
+    input DataPath     rs2,
     input ConstantPath constant
 );
     
@@ -22,9 +22,8 @@ module BranchUnit(
     always_comb begin
 
         case( brCode )
-        BR_CODE_EQ:    brTaken =  (regRS == regRT) ? TRUE : FALSE;
-        BR_CODE_NE:    brTaken =  (regRS != regRT) ? TRUE : FALSE;
-        BR_CODE_TAKEN: brTaken = TRUE;
+        BR_CODE_EQ:    brTaken =  (rs1 == rs2) ? TRUE : FALSE;
+        BR_CODE_NE:    brTaken =  (rs1 != rs2) ? TRUE : FALSE;
         default:       brTaken = FALSE;
         endcase
         

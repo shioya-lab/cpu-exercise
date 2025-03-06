@@ -49,7 +49,11 @@ module DMem(
     // データの読み込み
     integer i;
     initial    begin
+`ifdef VERILATOR_SIMULATION
+        $readmemh( "./DMem.dat", mem );
+`else
         $readmemh( "../DMem.dat", mem );
+`endif
     end
 
 // `else 

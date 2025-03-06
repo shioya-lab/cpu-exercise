@@ -54,10 +54,15 @@ module MainSim;
         //
         // 初期化
         //
-        for( i = 0; i < REG_FILE_SIZE; i++ ) begin
-            main.cpu.regFile.storage[ i ] = 16'hcdcd;
+        main.cpu.regFile.storage[0] = '0;
+        for( i = 1; i < REG_FILE_SIZE; i++ ) begin
+            main.cpu.regFile.storage[ i ] = i;
         end
         
+`ifdef VERILATOR_SIMULATION
+        $dumpfile("wave.vcd");
+        $dumpvars;
+`endif
         main.cpu.pc.pc = 0;
         sigCE = 1'b1;
         sigCH = 1'b1;
