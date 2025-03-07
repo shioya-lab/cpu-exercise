@@ -8,6 +8,7 @@ import Types::*;
 
 module BranchUnit(
     output InsnAddrPath pcOut,
+    output logic brTaken,
         
     input InsnAddrPath pcIn,
     input BrCodePath    brCode,
@@ -16,7 +17,6 @@ module BranchUnit(
     input ConstantPath constant
 );
     
-    logic brTaken;
     InsnAddrPath disp;
     
     always_comb begin
@@ -24,12 +24,15 @@ module BranchUnit(
         case( brCode )
         BR_CODE_EQ:    brTaken =  (rs1 == rs2) ? TRUE : FALSE;
         BR_CODE_NE:    brTaken =  (rs1 != rs2) ? TRUE : FALSE;
+        BR_CODE_LT:    brTaken =  (rs1 < rs2) ? TRUE : FALSE;
+        BR_CODE_GE:    brTaken =  (rs1 >= rs2) ? TRUE : FALSE;
+        BR_CODE_LTU:   brTaken =  ($unsigned(rs1) < $unsigned(rs2)) ? TRUE : FALSE;
+        BR_CODE_GEU:   brTaken =  ($unsigned(rs1) >= $unsigned(rs2)) ? TRUE : FALSE;
         default:       brTaken = FALSE;
         endcase
         
         disp = EXPAND_BR_DISPLACEMENT( constant );
-        pcOut =
-            pcIn + INSN_PC_INC + (brTaken ? disp : {INSN_ADDR_WIDTH{1'b0}});
+        pcOut = pcIn + (brTaken ? disp: INSN_PC_INC);
     end
 
 endmodule

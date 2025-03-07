@@ -32,6 +32,7 @@ module Decoder(
             opinfo.rd = insn[RD_POS +: REG_NUM_WIDTH];
             opinfo.rs1 = insn[RS1_POS +: REG_NUM_WIDTH];
             opinfo.rs2 = '0;
+            opinfo.constant[31:12] = {20{insn[31]}};
             opinfo.constant[11:0] = insn[31:20];
             opinfo.funct3 = insn[ FUNCT3_POS +: FUNCT3_WIDTH ];
             opinfo.isALUInConstant = TRUE;
@@ -49,6 +50,7 @@ module Decoder(
             opinfo.rd = insn[RD_POS +: REG_NUM_WIDTH];
             opinfo.rs1 = insn[RS1_POS +: REG_NUM_WIDTH];
             opinfo.rs2 = '0;
+            opinfo.constant[31:12] = {20{insn[31]}};
             opinfo.constant[11:0] = insn[31:20];
             opinfo.funct3 = insn[ FUNCT3_POS +: FUNCT3_WIDTH ];
             opinfo.isLoad = TRUE;
@@ -59,6 +61,7 @@ module Decoder(
             opinfo.rd = '0;
             opinfo.rs1 = insn[RS1_POS +: REG_NUM_WIDTH];
             opinfo.rs2 = insn[RS2_POS +: REG_NUM_WIDTH];
+            opinfo.constant[31:12] = {20{insn[31]}};
             opinfo.constant[11:5] = insn[31:25];
             opinfo.constant[4:0] = insn[11:7];
             opinfo.funct3 = insn[ FUNCT3_POS +: FUNCT3_WIDTH ];
@@ -69,7 +72,7 @@ module Decoder(
             opinfo.rd = '0;
             opinfo.rs1 = insn[RS1_POS +: REG_NUM_WIDTH];
             opinfo.rs2 = insn[RS2_POS +: REG_NUM_WIDTH];
-            opinfo.constant[12] = insn[31];
+            opinfo.constant[31:12] = {20{insn[31]}};
             opinfo.constant[10:5] = insn[30:25];
             opinfo.constant[4:1] = insn[11:8];
             opinfo.constant[11] = insn[7];
@@ -80,6 +83,7 @@ module Decoder(
             opinfo.rd = insn[RD_POS +: REG_NUM_WIDTH];
             opinfo.rs1 = insn[RS1_POS +: REG_NUM_WIDTH];
             opinfo.rs2 = '0;
+            opinfo.constant[31:12] = {20{insn[31]}};
             opinfo.constant[11:0] = insn[31:20];
             opinfo.funct3 = insn[ FUNCT3_POS +: FUNCT3_WIDTH ];
             opinfo.isJump = TRUE;
@@ -90,6 +94,7 @@ module Decoder(
             opinfo.rd = insn[RD_POS +: REG_NUM_WIDTH];
             opinfo.rs1 = '0;
             opinfo.rs2 = '0;
+            opinfo.constant[31:21] = {11{insn[31]}};
             opinfo.constant[20] = insn[31];
             opinfo.constant[10:1] = insn[30:21];
             opinfo.constant[11] = insn[20];

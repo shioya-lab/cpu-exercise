@@ -58,7 +58,7 @@ endfunction
 // constant を InsnAddrPath の幅にまで符号拡張する
 // InsnAddrPath が小さいので，上を取り出す
 function automatic InsnAddrPath EXPAND_BR_DISPLACEMENT(ConstantPath disp);
-     return { disp[ INSN_ADDR_WIDTH - 2 - 1 : 0 ], 2'b00 };
+     return { disp[ INSN_ADDR_WIDTH-1 : 0 ] };
 endfunction
 
 // 本来はこうなる

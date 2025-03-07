@@ -72,11 +72,12 @@ module CPU(
     // Branch Unit
     BranchUnit branch(
         pcIn,    // BranchUnit への入力は in と out が逆になるのを注意
+        brTaken,
         pcOut,
         dcOpinfo.funct3,
         rfRdData1,
         rfRdData2,
-        dcConstat
+        dcOpinfo.constant
     );
     
 
@@ -113,10 +114,12 @@ module CPU(
         // IMem
         imemInsnCode = insn;
         insnAddr     = pcOut;
+
+        pcWrEnable = brTaken && dcOpinfo.isBranch;
         
         // Data memory
         dataOut  = rfRdData2;
-        dataAddr = rfRdData1[ DATA_ADDR_WIDTH - 1 : 0 ] + EXPAND_ADDRESS( dcOpinfo.constant );
+        dataAddr = EXPAND_ADDRESS(rfRdData1 + dcOpinfo.constant);
         
         // Register write data
         rfWrData = dcOpinfo.isLoad ? dataIn : aluOut;
@@ -130,7 +133,7 @@ module CPU(
         aluCode = dcOpinfo.funct3;
 
         // DMem write enable
-        dataWrEnable = dcIsStoreInsn;
+        dataWrEnable = dcOpinfo.isStore;
         
      end
     
