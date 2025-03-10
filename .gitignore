@@ -7,3 +7,5 @@ QuartusSim/
 obj_dir/
 VivadoSim/
 wave.vcd
+*.jou
+*.log
