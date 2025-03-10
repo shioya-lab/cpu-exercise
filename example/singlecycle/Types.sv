@@ -26,8 +26,8 @@ parameter RS_POS = 21;
 parameter RT_POS = 16;
 // parameter RD_POS = 11;
 
-parameter SHIFT_POS = 6;
-parameter SHIFT_WIDTH = 4;
+parameter SHIFT_POS = 0;
+parameter SHIFT_WIDTH = 5;
 function automatic logic[SHIFT_WIDTH-1:0] GET_SHIFT(
     input DataPath disp
 ); 
@@ -148,20 +148,22 @@ typedef enum logic [2:0]    // enum OpFunct3
 //
 // Op命令のfunct7
 //
-typedef enum logic [6:0]    // enum OpFunct7
-{
-    OP_FUNCT7_ADD = 7'b0000000,
-    OP_FUNCT7_SUB = 7'b0100000
-} OpFunct7;
+// typedef enum logic [6:0]    // enum OpFunct7
+// {
+//     OP_FUNCT7_ADD = 7'b0000000,
+//     OP_FUNCT7_SUB = 7'b0100000
+// } OpFunct7;
 
+parameter OP_FUNCT7_ADD = 7'b0000000;
+parameter OP_FUNCT7_SUB = 7'b0100000;
 //
 // シフト命令のfunct7
 //
-typedef enum logic [6:0]    // enum ShiftFunct7
-{
-    SHIFT_FUNCT7_SRL = 7'b0000000,
-    SHIFT_FUNCT7_SRA = 7'b0100000
-} ShiftFunct7;
+// typedef enum logic [6:0]    // enum ShiftFunct7
+// {
+//     SHIFT_FUNCT7_SRL = 7'b0000000,
+//     SHIFT_FUNCT7_SRA = 7'b0100000
+// } ShiftFunct7;
 
 //
 // 分岐命令のfunct3
@@ -196,6 +198,10 @@ typedef enum logic [2:0]    // enum MiscMemFunct3
     MISC_MEM_FUNCT3_FENCE   = 3'b000, // FENCE
     MISC_MEM_FUNCT3_FENCE_I = 3'b001  // FENCE.I
 } MiscMemFunct3;
+
+parameter SHIFT_FUNCT7_SRL = 7'b0000000;
+parameter SHIFT_FUNCT7_SRA = 7'b0100000;
+
 
 //
 // ALU のコード

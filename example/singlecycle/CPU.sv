@@ -104,7 +104,8 @@ module CPU(
         aluOut,
         aluInA,
         aluInB,
-        aluCode
+        aluCode,
+        dcOpinfo.funct7
     );
     
 
@@ -130,6 +131,9 @@ module CPU(
         // ALU
         aluInA = rfRdData1;
         aluInB = dcOpinfo.isALUInConstant ? dcOpinfo.constant : rfRdData2;
+        if (dcOpinfo.isALUInConstant && dcOpinfo.funct7 == OP_FUNCT7_SUB) begin
+            aluInB = -aluInB;
+        end
         aluCode = dcOpinfo.funct3;
 
         // DMem write enable

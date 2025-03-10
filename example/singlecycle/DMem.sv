@@ -27,7 +27,7 @@ module DMem(
     DataPath    dataLatch;
     logic        weLatch;
 
-    always_ff @( posedge clk or negedge rst) begin
+    always_ff @( posedge clk ) begin
         
         if( !rst ) begin
             addrLatch <= {DATA_MEM_ADDR_WIDTH{1'b0}};

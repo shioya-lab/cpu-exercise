@@ -38,7 +38,7 @@ module Main(
     DataAddrPath dataAddr;            // アドレス
     DataPath     dataFromCPU;        // 入力
     DataPath     dataFromDMem;        // データメモリ読み出し
-    logic         dataWE_FromCPU;    
+    logic         dataWE_FromCPU;
 
     // Clock divider
     ClockDivider clockDivider(
