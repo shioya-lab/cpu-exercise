@@ -33,17 +33,16 @@ module MainSim;
     DD_OutArray led;
     DD_GateArray    gate;
     LampPath lamp;    // Lamp?
-    
 
     // Main モジュール
     Main main(
         sigCH,
         sigCE,
         sigCP,
-
-        led,
-        gate,
-        lamp,    // Lamp?
+        lamp,
+        // led,
+        // gate,
+        // lamp,    // Lamp?
         clkX4,    // 4倍速クロック
         rst     // リセット（0でリセット）
     );
@@ -56,7 +55,7 @@ module MainSim;
         //
         main.cpu.regFile.storage[0] = '0;
         for( i = 1; i < REG_FILE_SIZE; i++ ) begin
-            main.cpu.regFile.storage[ i ] = i;
+            main.cpu.regFile.storage[ i ] = 32'hcdcdcdcd;
         end
         
 `ifdef VERILATOR_SIMULATION
@@ -101,6 +100,9 @@ module MainSim;
 
         // 100 サイクル 
         #(CYCLE_TIME*1000)
+        for (int i = 0; i < 8; i++) begin
+            $display("%x", main.dmem.mem[4096+i]);
+        end 
         $finish;
 
 

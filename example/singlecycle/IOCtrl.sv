@@ -133,7 +133,6 @@ module IOCtrl(
     output DD_OutArray        led,    // 7seg
     output DD_GateArray    gate,    // 7seg gate
     output LampPath         lamp,    // Lamp?
-    
 
     input DataAddrPath addr,            // データアドレス
     input DataPath     dataFromCPU,    // データ本体
@@ -174,15 +173,16 @@ module IOCtrl(
         CyclePath  cycleCount;            // (N/A)
         
         // Indicates start of sort.
-        // This register is set when the 'ch' is asserted and 
+        // This register is set when the 'btnc' is asserted and 
         // is not changed after being set.
         logic sortStart;
         
         // Externnal switches
         // (R)
         logic ce;
-        logic ch;
+        logic btnc;
         logic cp;
+        // LampPath ledOut;
         
         
     } ctrlReg, ctrlNext, ctrlInit;
@@ -242,7 +242,8 @@ module IOCtrl(
 
                 IO_ADDR_SORT_FINISH:    ctrlNext.sortFinish = dataFromCPU[0];
                 IO_ADDR_SORT_COUNT:     ctrlNext.sortCount  = dataFromCPU;
-                IO_ADDR_LED_CTRL:         ctrlNext.ledCtrl    = dataFromCPU[0];
+                IO_ADDR_LAMP:           ctrlNext.lamp       = dataFromCPU[ LAMP_WIDTH-1 : 0 ];
+                IO_ADDR_LED_CTRL:       ctrlNext.ledCtrl    = dataFromCPU[0];
 
                 IO_ADDR_LED0: ctrlNext.led = GetNextLED(ctrlNext.led, 0, dataFromCPU);
                 IO_ADDR_LED1: ctrlNext.led = GetNextLED(ctrlNext.led, 1, dataFromCPU);
@@ -252,10 +253,7 @@ module IOCtrl(
                 IO_ADDR_LED5: ctrlNext.led = GetNextLED(ctrlNext.led, 5, dataFromCPU);
                 IO_ADDR_LED6: ctrlNext.led = GetNextLED(ctrlNext.led, 6, dataFromCPU);
                 IO_ADDR_LED7: ctrlNext.led = GetNextLED(ctrlNext.led, 7, dataFromCPU);
-                
-                default:                  ctrlNext.lamp       = dataFromCPU[ LAMP_WIDTH-1 : 0 ];
-
-            
+                default:      ctrlNext.led = '0;
             endcase    // case( addr ) 
 
         end    // if( isIO && weFromCPU ) begin
@@ -265,12 +263,12 @@ module IOCtrl(
         if( isIO ) begin
 
             // IO
-            dataToCPU = {DATA_WIDTH{1'b0}};
+            dataToCPU = '0;
             case( PICK_IO_ADDR( addr ) ) 
                 IO_ADDR_SORT_START: dataToCPU[0] = ctrlReg.sortStart;
                 IO_ADDR_CE: dataToCPU[0] = ctrlReg.ce;
                 IO_ADDR_CP: dataToCPU[0] = ctrlReg.cp;
-                IO_ADDR_CH: dataToCPU[0] = ctrlReg.ch;        // ソートスタート
+                IO_ADDR_CH: dataToCPU[0] = ctrlReg.btnc;        // ソートスタート
                 default:     dataToCPU = {DATA_WIDTH{1'bx}};
             endcase
 
@@ -293,7 +291,7 @@ module IOCtrl(
         
         
         // サイクルカウント
-        if( ( !ctrlReg.ch || ctrlReg.enableCycleCount ) &&
+        if( ( !ctrlReg.btnc || ctrlReg.enableCycleCount ) &&
             !ctrlReg.sortFinish
         ) begin
             ctrlNext.cycleCount = ctrlReg.cycleCount + 1'h1;
@@ -303,8 +301,8 @@ module IOCtrl(
         
         
         // Switchs
-        // CH/CE/CP
-        ctrlNext.ch = sigCH;
+        // btnc/CE/CP
+        ctrlNext.btnc = sigCH;
         ctrlNext.ce = sigCE;
         ctrlNext.cp = sigCP;
 
@@ -321,12 +319,13 @@ module IOCtrl(
         led  = ddDrvOut;
         lamp = outReg.lamp;
         gate = ddDrvGate;
+        // ledOut = ctrlReg.ledOut;
         
         //
         // リセット
         //
         ctrlInit = 0;
-        ctrlInit.ch = 1'b1;
+        ctrlInit.btnc = 1'b1;
         ctrlInit.cp = 1'b1;
         ctrlInit.ce = 1'b1;
      end

@@ -52,7 +52,7 @@ module DMem(
 `ifdef VERILATOR_SIMULATION
         $readmemh( "./DMem.dat", mem );
 `else
-        $readmemh( "../DMem.dat", mem );
+        $readmemh( "./DMem.dat", mem );
 `endif
     end
 

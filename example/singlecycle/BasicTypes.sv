@@ -184,14 +184,14 @@ function automatic logic [IO_ADDR_WIDTH-1:0] MAKE_IO_ADDR(input logic [IO_ADDR_W
 endfunction
 
 function automatic logic [IO_ADDR_WIDTH-1:0] PICK_IO_ADDR(input DataAddrPath address );
-    return address[ 1 +:IO_ADDR_WIDTH ]; //(`IO_ADDR_BEGIN + address)
+    return address[ 2 +:IO_ADDR_WIDTH ]; //(`IO_ADDR_BEGIN + address)
 endfunction
 
 // アドレスマップ
-parameter IO_ADDR_SORT_FINISH = MAKE_IO_ADDR( 5'h0 );// $4000: ソート終了 
-parameter IO_ADDR_SORT_COUNT  = MAKE_IO_ADDR( 5'h1 );// $4002: ソート数   
-parameter IO_ADDR_LAMP        = MAKE_IO_ADDR( 5'h2 );// $4004: ???
-parameter IO_ADDR_LED_CTRL    = MAKE_IO_ADDR( 5'h3 );// $4006: LED 制御
+parameter IO_ADDR_SORT_FINISH = MAKE_IO_ADDR( 5'h0 );// $8000: ソート終了 
+parameter IO_ADDR_SORT_COUNT  = MAKE_IO_ADDR( 5'h1 );// $8004: ソート数   
+parameter IO_ADDR_LAMP        = MAKE_IO_ADDR( 5'h2 );// $8008: ???
+parameter IO_ADDR_LED_CTRL    = MAKE_IO_ADDR( 5'h3 );// $800C: LED 制御
 //   0 : サイクル数とソート数をLEDに表示
 //   1 : IO_ADDR_LED0 から IO_ADDR_LED1 に書いた値を表示
 

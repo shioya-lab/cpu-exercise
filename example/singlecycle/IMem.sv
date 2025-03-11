@@ -38,7 +38,7 @@ module IMem(
 `ifdef VERILATOR_SIMULATION
         $readmemh( "./IMem.dat", mem );
 `else 
-        $readmemh( "../IMem.dat", mem );
+        $readmemh( "./IMem.dat", mem );
 `endif
     end
 

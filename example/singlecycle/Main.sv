@@ -3,14 +3,11 @@ import BasicTypes::*;
 import Types::*;
 
 module Main(
-    input logic sigCH,
-    input logic sigCE,
-    input logic sigCP,
+    input logic BTNC,
+    input logic BTNU,
+    input logic BTND,
+    output LampPath ledOut,
 
-    output DD_OutArray  led,    // 7seg
-    output DD_GateArray gate,    // 7seg gate
-    output LampPath     lamp,    // Lamp?
-    
     input logic clkBase,    // 4倍速クロック
     input logic rst         // リセット（0でリセット）
 );
@@ -19,6 +16,10 @@ module Main(
     // このままではシングルサイクルマシンが作れないので，メモリには
     // 4倍速のクロックを入れてある．
 
+    DD_OutArray  led;    // 7seg
+    DD_GateArray gate;    // 7seg gate
+    LampPath     lamp;    // Lamp?
+    
     // Clock/Reset
     logic clkX4;
     logic clk;
@@ -56,16 +57,16 @@ module Main(
         
         led,    // LED
         gate,    // select 7seg
-        lamp,    // Lamp?
+        ledOut,
 
         dataAddr,
         dataFromCPU,
         dataFromDMem,
         dataWE_Req,
 
-        sigCH,
-        sigCE,
-        sigCP
+        BTNC,
+        BTNU,
+        BTND
     );
     
     // CPU
