@@ -3,9 +3,15 @@ import BasicTypes::*;
 import Types::*;
 
 module Main(
-    input logic BTNC,
-    input logic BTNU,
-    input logic BTND,
+    input logic btnC,
+    input logic btnU,
+    input logic btnD,
+	output logic oledDC,
+	output logic oledRES,
+	output logic oledSCLK,
+	output logic oledSDIN,
+	output logic oledVBAT,
+	output logic oledVDD,
     output LampPath ledOut,
 
     input logic clkBase,    // 4倍速クロック
@@ -64,11 +70,18 @@ module Main(
         dataFromDMem,
         dataWE_Req,
 
-        BTNC,
-        BTNU,
-        BTND
+        btnC,
+        btnU,
+        btnD,
+
+        oledDC,
+        oledRES,
+        oledSCLK,
+        oledSDIN,
+        oledVBAT,
+        oledVDD
     );
-    
+	
     // CPU
     CPU cpu(
         clk,

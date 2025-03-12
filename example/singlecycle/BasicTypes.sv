@@ -205,11 +205,14 @@ parameter IO_ADDR_LED6 = MAKE_IO_ADDR( 5'he );
 parameter IO_ADDR_LED7 = MAKE_IO_ADDR( 5'hf );
 
 
-parameter IO_ADDR_SORT_START = MAKE_IO_ADDR( 5'h10 );// $4020: ソート開始
-parameter IO_ADDR_CE         = MAKE_IO_ADDR( 5'h11 );// $4022: CE スイッチ
-parameter IO_ADDR_CP         = MAKE_IO_ADDR( 5'h12 );// $4024: CP スイッチ
-parameter IO_ADDR_CH         = MAKE_IO_ADDR( 5'h13 );// $4026: CH スイッチ
-parameter IO_ADDR_CYCLE      = MAKE_IO_ADDR( 5'h14 );// $4028: 現在のサイクル
+parameter IO_ADDR_SORT_START = MAKE_IO_ADDR( 5'h10 );// $8040: ソート開始
+parameter IO_ADDR_CE         = MAKE_IO_ADDR( 5'h11 );// $8044: CE スイッチ
+parameter IO_ADDR_CP         = MAKE_IO_ADDR( 5'h12 );// $8048: CP スイッチ
+parameter IO_ADDR_CH         = MAKE_IO_ADDR( 5'h13 );// $804C: CH スイッチ
+parameter IO_ADDR_CYCLE      = MAKE_IO_ADDR( 5'h14 );// $8050: 現在のサイクル
+
+parameter IO_ADDR_OLED_START = MAKE_IO_ADDR( 5'h15 );// $8054: OLED開始番地
+parameter IO_ADDR_OLED_END   = MAKE_IO_ADDR( 5'h79 );// $80XX: OLED終了番地
 
 
 endpackage

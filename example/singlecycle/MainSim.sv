@@ -33,12 +33,25 @@ module MainSim;
     DD_OutArray led;
     DD_GateArray    gate;
     LampPath lamp;    // Lamp?
+	//OLED command pins
+	logic SDIN;
+	logic SCLK;
+	logic DC;
+	logic RES;
+	logic VBAT;
+	logic VDD;
 
     // Main モジュール
     Main main(
         sigCH,
         sigCE,
         sigCP,
+	    SDIN,
+        SCLK,
+        DC,
+        RES,
+        VBAT,
+        VDD,
         lamp,
         // led,
         // gate,
@@ -78,9 +91,7 @@ module MainSim;
         #(CYCLE_TIME/8)
         #(CYCLE_TIME)
         #(CYCLE_TIME)
-        
-        // CH On
-        sigCH = 1'b0;
+    
 
         //
         // シミュレーション開始

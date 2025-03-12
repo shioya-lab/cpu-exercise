@@ -50,7 +50,7 @@ wave.vcd: obj_dir/V$(TOPLEVEL_MODULE)
 
 
 clean:
-	rm -rf obj_dir $(VIVADO_PROJECT_WORK) wave.vcd
+	rm -rf obj_dir $(VIVADO_PROJECT_WORK) wave.vcd *.log *.jou
 
 
 # Vivado sim may require the following additonal components:
@@ -62,6 +62,9 @@ VIVADO_PROJECT_WORK = VivadoSim
 XVLOG = $(VIVADO_BIN)/xvlog
 XELAB = $(VIVADO_BIN)/xelab
 XSIM  = $(VIVADO_BIN)/xsim
+
+XVLOG_OPTIONS = \
+	-d VIVADO_SIMULATION \
 
 vivado-compile: $(SOURCES)
 	mkdir $(VIVADO_PROJECT_WORK) -p
@@ -75,3 +78,8 @@ vivado-sim: vivado-compile
 
 vivado-sim-gui: vivado-compile
 	cd $(VIVADO_PROJECT_WORK) && $(XSIM) -gui $(XSIM_OPTIONS) $(TOPLEVEL_MODULE)
+
+
+vivado:
+	cd vivado_project/ && vivado vivado_project.xpr &
+
