@@ -195,14 +195,16 @@ parameter IO_ADDR_LED_CTRL    = MAKE_IO_ADDR( 5'h3 );// $800C: LED 制御
 //   0 : サイクル数とソート数をLEDに表示
 //   1 : IO_ADDR_LED0 から IO_ADDR_LED1 に書いた値を表示
 
-parameter IO_ADDR_LED0 = MAKE_IO_ADDR( 5'h8 );// $4010 - $401e:
-parameter IO_ADDR_LED1 = MAKE_IO_ADDR( 5'h9 );// LED out
-parameter IO_ADDR_LED2 = MAKE_IO_ADDR( 5'ha );// Each register corresponds a 4-bit value.
-parameter IO_ADDR_LED3 = MAKE_IO_ADDR( 5'hb );
-parameter IO_ADDR_LED4 = MAKE_IO_ADDR( 5'hc );
-parameter IO_ADDR_LED5 = MAKE_IO_ADDR( 5'hd );
-parameter IO_ADDR_LED6 = MAKE_IO_ADDR( 5'he );
-parameter IO_ADDR_LED7 = MAKE_IO_ADDR( 5'hf );
+// parameter IO_ADDR_LED0 = MAKE_IO_ADDR( 5'h8 );// $4010 - $401e:
+// parameter IO_ADDR_LED1 = MAKE_IO_ADDR( 5'h9 );// LED out
+// parameter IO_ADDR_LED2 = MAKE_IO_ADDR( 5'ha );// Each register corresponds a 4-bit value.
+// parameter IO_ADDR_LED3 = MAKE_IO_ADDR( 5'hb );
+// parameter IO_ADDR_LED4 = MAKE_IO_ADDR( 5'hc );
+// parameter IO_ADDR_LED5 = MAKE_IO_ADDR( 5'hd );
+// parameter IO_ADDR_LED6 = MAKE_IO_ADDR( 5'he );
+// parameter IO_ADDR_LED7 = MAKE_IO_ADDR( 5'hf );
+parameter IO_ADDR_OLED_READY = MAKE_IO_ADDR( 5'h8 );// $8020: OLED ready
+parameter IO_ADDR_OLED_UPDATE = MAKE_IO_ADDR( 5'h9 );// $8024: OLED update
 
 
 parameter IO_ADDR_SORT_START = MAKE_IO_ADDR( 5'h10 );// $8040: ソート開始
