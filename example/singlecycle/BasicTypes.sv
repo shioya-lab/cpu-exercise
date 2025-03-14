@@ -113,6 +113,22 @@ parameter LED_1_POS = 16;
 parameter LED_2_POS = 8;
 parameter LED_3_POS = 0;
 
+function automatic logic[7:0] ConvertToASCII(input logic[3:0] data);
+
+    logic [7:0] ch;
+    if (data < 4'hA) begin
+        ch = "0" + {4'b0, data};
+    end
+    else if (data >= 4'hA) begin
+        ch = "A" + {4'b0, data - 4'hA};
+    end
+    else begin
+        ch = '0;
+    end
+    return ch;
+
+endfunction
+
 typedef logic [ LED_DATA_WIDTH - 1 : 0 ] LED_DataPath;
 typedef logic [ DD_IN_WIDTH - 1 : 0 ] DD_InPath;
 typedef logic [ DD_OUT_WIDTH - 1 : 0 ] DD_OutPath;
@@ -177,7 +193,7 @@ typedef logic [ CYCLE_WIDTH-1 : 0 ] CyclePath;
 // アドレスのこのビットが立っていたらIO
 parameter IO_ADDR_BIT_POS = 15;
 parameter IO_ADDR_BEGIN   = 15'h8000;
-parameter IO_ADDR_WIDTH   = 5;
+parameter IO_ADDR_WIDTH   = 7;
 
 function automatic logic [IO_ADDR_WIDTH-1:0] MAKE_IO_ADDR(input logic [IO_ADDR_WIDTH-1:0] address); 
     return address; //(`IO_ADDR_BEGIN + address)
@@ -187,11 +203,15 @@ function automatic logic [IO_ADDR_WIDTH-1:0] PICK_IO_ADDR(input DataAddrPath add
     return address[ 2 +:IO_ADDR_WIDTH ]; //(`IO_ADDR_BEGIN + address)
 endfunction
 
+function automatic logic [IO_ADDR_WIDTH-2:0] GET_OLED_ADDR(input DataAddrPath address );
+    return address [2 +: 6];
+endfunction
+
 // アドレスマップ
-parameter IO_ADDR_SORT_FINISH = MAKE_IO_ADDR( 5'h0 );// $8000: ソート終了 
-parameter IO_ADDR_SORT_COUNT  = MAKE_IO_ADDR( 5'h1 );// $8004: ソート数   
-parameter IO_ADDR_LAMP        = MAKE_IO_ADDR( 5'h2 );// $8008: ???
-parameter IO_ADDR_LED_CTRL    = MAKE_IO_ADDR( 5'h3 );// $800C: LED 制御
+parameter IO_ADDR_SORT_FINISH = MAKE_IO_ADDR( 7'h0 );// $8000: ソート終了 
+parameter IO_ADDR_SORT_COUNT  = MAKE_IO_ADDR( 7'h1 );// $8004: ソート数   
+parameter IO_ADDR_LAMP        = MAKE_IO_ADDR( 7'h2 );// $8008: ???
+parameter IO_ADDR_LED_CTRL    = MAKE_IO_ADDR( 7'h3 );// $800C: LED 制御
 //   0 : サイクル数とソート数をLEDに表示
 //   1 : IO_ADDR_LED0 から IO_ADDR_LED1 に書いた値を表示
 
@@ -203,18 +223,18 @@ parameter IO_ADDR_LED_CTRL    = MAKE_IO_ADDR( 5'h3 );// $800C: LED 制御
 // parameter IO_ADDR_LED5 = MAKE_IO_ADDR( 5'hd );
 // parameter IO_ADDR_LED6 = MAKE_IO_ADDR( 5'he );
 // parameter IO_ADDR_LED7 = MAKE_IO_ADDR( 5'hf );
-parameter IO_ADDR_OLED_READY = MAKE_IO_ADDR( 5'h8 );// $8020: OLED ready
-parameter IO_ADDR_OLED_UPDATE = MAKE_IO_ADDR( 5'h9 );// $8024: OLED update
+parameter IO_ADDR_OLED_READY = MAKE_IO_ADDR( 7'h8 );// $8020: OLED ready
+parameter IO_ADDR_OLED_UPDATE = MAKE_IO_ADDR( 7'h9 );// $8024: OLED update
+parameter IO_ADDR_OLED_CLEAR = MAKE_IO_ADDR( 7'ha );// $8028: OLED clear
 
 
-parameter IO_ADDR_SORT_START = MAKE_IO_ADDR( 5'h10 );// $8040: ソート開始
-parameter IO_ADDR_CE         = MAKE_IO_ADDR( 5'h11 );// $8044: CE スイッチ
-parameter IO_ADDR_CP         = MAKE_IO_ADDR( 5'h12 );// $8048: CP スイッチ
-parameter IO_ADDR_CH         = MAKE_IO_ADDR( 5'h13 );// $804C: CH スイッチ
-parameter IO_ADDR_CYCLE      = MAKE_IO_ADDR( 5'h14 );// $8050: 現在のサイクル
+parameter IO_ADDR_SORT_START = MAKE_IO_ADDR( 7'h10 );// $8040: ソート開始
+parameter IO_ADDR_CE         = MAKE_IO_ADDR( 7'h11 );// $8044: CE スイッチ
+parameter IO_ADDR_CP         = MAKE_IO_ADDR( 7'h12 );// $8048: CP スイッチ
+parameter IO_ADDR_CH         = MAKE_IO_ADDR( 7'h13 );// $804C: CH スイッチ
+parameter IO_ADDR_CYCLE      = MAKE_IO_ADDR( 7'h14 );// $8050: 現在のサイクル
 
-parameter IO_ADDR_OLED_START = MAKE_IO_ADDR( 5'h15 );// $8054: OLED開始番地
-parameter IO_ADDR_OLED_END   = MAKE_IO_ADDR( 5'h79 );// $80XX: OLED終了番地
-
+parameter IO_ADDR_OLED_START = MAKE_IO_ADDR( 7'h40 );// $8100: OLED開始番地
+parameter IO_ADDR_OLED_END   = MAKE_IO_ADDR( 7'h7f );// $81fc: OLED終了番地
 
 endpackage

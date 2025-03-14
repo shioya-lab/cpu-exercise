@@ -36,7 +36,7 @@ module IMem(
     // 命令データの読み込み
     initial    begin
 `ifdef VIVADO_SIMULATION
-        $readmemh( "../IMem.dat", mem );
+        $readmemh( "IMem.dat", mem );
 `else 
         $readmemh( "./IMem.dat", mem );
 `endif

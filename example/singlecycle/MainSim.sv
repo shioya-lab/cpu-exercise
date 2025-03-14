@@ -29,6 +29,7 @@ module MainSim;
     logic sigCH;
     logic sigCE;
     logic sigCP;
+    logic btnL;
 
     DD_OutArray led;
     DD_GateArray    gate;
@@ -46,6 +47,7 @@ module MainSim;
         sigCH,
         sigCE,
         sigCP,
+        btnL,
 	    SDIN,
         SCLK,
         DC,

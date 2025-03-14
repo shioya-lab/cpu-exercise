@@ -124,15 +124,17 @@ module OLED_Driver(
     input logic clk,
     input logic writeOLED,
     input logic updateOLED,
-    input logic [7:0] write_ascii_data,
-    input logic [8:0] write_base_addr,
+    input logic clearOLED,
+    input logic [7:0] ch,
+    input logic [8:0] index,
     output logic oledReady,
 	output logic oledDC,
 	output logic oledRES,
 	output logic oledSCLK,
 	output logic oledSDIN,
 	output logic oledVBAT,
-	output logic oledVDD
+	output logic oledVDD,
+    output logic[7:0] debugLed
 );
 
     //state machine codes
@@ -144,20 +146,25 @@ module OLED_Driver(
     localparam Write      = 5;
     localparam WriteWait  = 6;
     localparam UpdateWait = 7;
-    
-    //text to be displayed
-    localparam str1=" I am the       ", str1len=16;
-    localparam str2=" Zedboard OLED  ", str2len=16;
-    localparam str3=" Display Demo!  ", str3len=16;
-    localparam str4="                ", str4len=16;
-    reg [7:0] ch = 8'h50;
+    localparam clearWait  = 8;
+
+    logic [7:0] writeBuffer[0:63];
+    initial begin
+        for (int i = 0; i < 64; i++) begin
+            writeBuffer[i] = 0;
+        end
+    end
+    always@(posedge clk) begin
+        if (writeOLED) begin
+            writeBuffer[index[8:3]] <= ch;
+        end
+    end
     
     localparam AUTO_START = 1; // determines whether the OLED will be automatically initialized when the board is programmed
     	
     //state machine registers.
-    reg [2:0] state = (AUTO_START == 1) ? Init : Idle;
+    reg [3:0] state = (AUTO_START == 1) ? Init : Idle;
     reg [5:0] count = 0;//loop index variable
-    reg       once = 0;//bool to see if we have set up local pixel memory in this session
         
     //oled control signals
     //command start signals, assert high to start command
@@ -168,8 +175,8 @@ module OLED_Driver(
     reg        write_start = 0;         //writes a character bitmap into local memory
     //data signals for oled controls
     reg        update_clear = 0;        //when asserted high, an update command clears the display, instead of filling from memory
-    // reg  [8:0] write_base_addr = 0;     //location to write character to, two most significant bits are row position, 0 is topmost. bottom seven bits are X position, addressed by pixel x position.
-    // reg  [7:0] write_ascii_data = 0;    //ascii value of character to write to memory
+    reg  [8:0] write_base_addr = 0;     //location to write character to, two most significant bits are row position, 0 is topmost. bottom seven bits are X position, addressed by pixel x position.
+    reg  [7:0] write_ascii_data = 0;    //ascii value of character to write to memory
     //active high command ready signals, appropriate start commands are ignored when these are not asserted high
     wire       disp_on_ready;
     wire       disp_off_ready;
@@ -207,28 +214,17 @@ module OLED_Driver(
         .VDD (oledVDD)
     );
 `endif
-    // always@(write_base_addr)
-    //     case (write_base_addr[8:7])//select string as [y]
-    //     0: write_ascii_data <= 8'hff & (ch + write_base_addr[5:3]);//index string parameters as str[x]
-    //     1: write_ascii_data <= 8'hff & (str2 >> ({3'b0, (str2len - 1 - write_base_addr[6:3])} << 3));
-    //     2: write_ascii_data <= 8'hff & (str3 >> ({3'b0, (str3len - 1 - write_base_addr[6:3])} << 3));
-    //     3: write_ascii_data <= 8'hff & (str4 >> ({3'b0, (str4len - 1 - write_base_addr[6:3])} << 3));
-    //     endcase
-        
     
 //    assign ch = 8'h54;
-    // assign led = update_ready;//display whether btnU, BtnD controls are available..
     assign init_done = disp_off_ready | toggle_disp_ready | write_ready | update_ready;//parse ready signals for clarity
     assign init_ready = disp_on_ready;
-    assign oledReady = write_ready | update_ready;
     always@(posedge clk)
         case (state)
             Idle: begin
-                if (init_ready == 1'b1) begin
+                if (rst == 1'b1 && init_ready == 1'b1) begin
                     disp_on_start <= 1'b1;
                     state <= Init;
                 end
-                once <= 0;
             end
             Init: begin
                 disp_on_start <= 1'b0;
@@ -239,23 +235,40 @@ module OLED_Driver(
                 if (rst && disp_off_ready) begin
                     disp_off_start <= 1'b1;
                     state <= Done;
-                end else if (write_ready && writeOLED) begin
+                end else if (updateOLED && write_ready) begin
                     write_start <= 1'b1;
-                    // write_base_addr <= 'b0;
+                    write_base_addr <= 'b0;
+                    write_ascii_data <= writeBuffer[0];
                     state <= WriteWait;
-                end
-                else if (update_ready && updateOLED) begin
-                    update_start <= 1'b1;
-                    update_clear <= 1'b0;
-                    state <= UpdateWait;
-                end
+                end 
+                // else if (dBtnU == 1) begin
+                //     update_start <= 1'b1;
+                //     update_clear <= 1'b0;
+                //     state <= UpdateWait;
+                // end else if (dBtnD == 1) begin
+                //     update_start <= 1'b1;
+                //     update_clear <= 1'b1;
+                //     state <= UpdateWait;
+                // end
+            end
+            Write: begin
+                write_start <= 1'b1;
+                //write_ascii_data updated with write_base_addr
+                state <= WriteWait;
             end
             WriteWait: begin
                 write_start <= 1'b0;
                 if (write_ready == 1'b1) begin
-                    update_start <= 1'b1;
-                    update_clear <= 1'b0;
-                    state <= UpdateWait;
+                    if (write_base_addr == 9'h3f8) begin
+                        update_start <= 1'b1;
+                        update_clear <= 1'b0;
+                        state <= UpdateWait;
+                    end
+                    else begin
+                        state <= Write;
+                        write_base_addr <= write_base_addr + 9'h8;
+                        write_ascii_data <= writeBuffer[write_base_addr[8:3] + 1];
+                    end
                 end
             end
             UpdateWait: begin
@@ -263,11 +276,11 @@ module OLED_Driver(
                 if (init_done == 1'b1)
                     state <= Active;
             end
-            // Done: begin
-            //     disp_off_start <= 1'b0;
-            //     if (rst == 1'b0 && init_ready == 1'b1)
-            //         state <= Idle;
-            // end
+            Done: begin
+                disp_off_start <= 1'b0;
+                if (rst == 1'b0 && init_ready == 1'b1)
+                    state <= Idle;
+            end
             default: state <= Idle;
         endcase
 
@@ -295,6 +308,7 @@ module IOCtrl(
     input logic sigCH,
     input logic sigCE,
     input logic sigCP,
+    input logic btnL,
 
 	output logic oledDC,
 	output logic oledRES,
@@ -351,6 +365,7 @@ module IOCtrl(
         logic [8:0] oledIndex;
         logic writeOLED;
         logic updateOLED;
+        logic clearOLED;
     } outReg, outNext;
 
     struct packed {
@@ -364,6 +379,7 @@ module IOCtrl(
     
     logic writeOLED;
     logic updateOLED;
+    logic clearOLED;
     logic [7:0] write_ascii_data;
     logic [8:0] write_base_addr;
     logic oledReady;
@@ -372,25 +388,32 @@ module IOCtrl(
     LED_OutArray ledDrvOut;    // 7-bitx8 output
     LED_Driver ledDrv0( ledDrvOut, ledDrvIn );
 
+    logic [5:0] wrIndex;
+    logic [7:0] buffer[64];
+
     
     // Dynamic Display
     DD_OutArray    ddDrvOut;
     DD_GateArray        ddDrvGate;
     DD_Driver ddDrv0( ddDrvOut, ddDrvGate, outReg.led, clk, rst );
 
+    logic [7:0] debugLed, ledTest;
+
     OLED_Driver oledDrv0 (
         .clk(clk),
         .writeOLED(writeOLED),
         .updateOLED(updateOLED),
-        .write_ascii_data(write_ascii_data),
-        .write_base_addr(write_base_addr),
+        .clearOLED (clearOLED),
+        .ch(write_ascii_data),
+        .index(write_base_addr),
         .oledReady(oledReady),
         .oledDC(oledDC),
         .oledRES(oledRES),
         .oledSCLK(oledSCLK),
         .oledSDIN(oledSDIN),
         .oledVBAT(oledVBAT),
-        .oledVDD(oledVDD)
+        .oledVDD(oledVDD),
+        .debugLed (debugLed)
     );
 
     //
@@ -418,7 +441,9 @@ module IOCtrl(
         // 制御レジスタの次のサイクルの値
         ctrlNext = ctrlReg;
         outNext = '0;
-        
+        writeOLED = FALSE;
+        write_base_addr = 0;
+        write_ascii_data = 0;
 
         // 書き込み
         if( isIO && weFromCPU ) begin
@@ -439,11 +464,12 @@ module IOCtrl(
                 // IO_ADDR_LED6: ctrlNext.led = GetNextLED(ctrlNext.led, 6, dataFromCPU);
                 // IO_ADDR_LED7: ctrlNext.led = GetNextLED(ctrlNext.led, 7, dataFromCPU);
                 IO_ADDR_OLED_UPDATE: outNext.updateOLED = TRUE;
+                IO_ADDR_OLED_CLEAR:  outNext.clearOLED = TRUE;
                 default: begin
-                    if (PICK_IO_ADDR(addr) >= IO_ADDR_OLED_START && PICK_IO_ADDR(addr) <= IO_ADDR_OLED_END) begin
-                        outNext.writeOLED = TRUE;
-                        outNext.oledIndex = {{PICK_IO_ADDR(addr) - IO_ADDR_OLED_START}, 4'b0};
-                        outNext.ch = dataFromCPU[7:0];
+                    if (PICK_IO_ADDR(addr) >= IO_ADDR_OLED_START) begin
+                        writeOLED = TRUE;
+                        write_base_addr = {GET_OLED_ADDR(addr), 3'b0};
+                        write_ascii_data = ConvertToASCII(dataFromCPU[3:0]);
                     end
                 end
             endcase    // case( addr ) 
@@ -512,11 +538,13 @@ module IOCtrl(
         led  = ddDrvOut;
         lamp = outReg.lamp;
         gate = ddDrvGate;
+        lamp = ledTest;
 
-        writeOLED = outReg.writeOLED;
-        write_ascii_data = outReg.ch;
-        write_base_addr = outReg.oledIndex;
+        // writeOLED = outReg.writeOLED;
+        // write_ascii_data = ConvertToASCII(outReg.ch[3:0]);
+        // write_base_addr = outReg.oledIndex;
         updateOLED = outReg.updateOLED;
+        clearOLED = outReg.clearOLED;
         // lamp = write_ascii_data;
         // ledOut = ctrlReg.ledOut;
         
@@ -537,10 +565,13 @@ module IOCtrl(
         if( !rst ) begin
             ctrlReg <= ctrlInit;
             outReg  <= 0;
+            ledTest <= 0;
         end
         else begin
             ctrlReg <= ctrlNext;
             outReg  <= outNext;
+            if (btnL)
+                ledTest <= ledTest + 1;
         end
     end
 

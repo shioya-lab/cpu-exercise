@@ -6,6 +6,7 @@ module Main(
     input logic btnC,
     input logic btnU,
     input logic btnD,
+    input logic btnL,
 	output logic oledDC,
 	output logic oledRES,
 	output logic oledSCLK,
@@ -73,6 +74,7 @@ module Main(
         btnC,
         btnU,
         btnD,
+        btnL,
 
         oledDC,
         oledRES,

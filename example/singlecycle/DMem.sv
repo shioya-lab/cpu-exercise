@@ -50,7 +50,7 @@ module DMem(
     integer i;
     initial    begin
 `ifdef VIVADO_SIMULATION
-        $readmemh( "../DMem.dat", mem );
+        $readmemh( "DMem.dat", mem );
 `else
         $readmemh( "./DMem.dat", mem );
 `endif
