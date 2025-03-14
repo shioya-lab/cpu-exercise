@@ -27,7 +27,7 @@ module MainSim;
     logic rst;
 
     logic sigCH;
-    logic sigCE;
+    logic btnU;
     logic sigCP;
     logic btnL;
 
@@ -45,7 +45,7 @@ module MainSim;
     // Main モジュール
     Main main(
         sigCH,
-        sigCE,
+        btnU,
         sigCP,
         btnL,
 	    SDIN,
@@ -78,7 +78,7 @@ module MainSim;
         $dumpvars;
 `endif
         main.cpu.pc.pc = 0;
-        sigCE = 1'b1;
+        btnU = 1'b1;
         sigCH = 1'b1;
         sigCP = 1'b1;
 

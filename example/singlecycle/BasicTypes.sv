@@ -229,10 +229,17 @@ parameter IO_ADDR_OLED_CLEAR = MAKE_IO_ADDR( 7'ha );// $8028: OLED clear
 
 
 parameter IO_ADDR_SORT_START = MAKE_IO_ADDR( 7'h10 );// $8040: ソート開始
-parameter IO_ADDR_CE         = MAKE_IO_ADDR( 7'h11 );// $8044: CE スイッチ
+parameter IO_ADDR_BTNU       = MAKE_IO_ADDR( 7'h11 );// $8044: BTNU スイッチ
 parameter IO_ADDR_CP         = MAKE_IO_ADDR( 7'h12 );// $8048: CP スイッチ
 parameter IO_ADDR_CH         = MAKE_IO_ADDR( 7'h13 );// $804C: CH スイッチ
 parameter IO_ADDR_CYCLE      = MAKE_IO_ADDR( 7'h14 );// $8050: 現在のサイクル
+
+parameter IO_ADDR_OLED_CYCLE_START   = MAKE_IO_ADDR( 7'h18 );
+parameter IO_ADDR_OLED_CYCLE_END     = MAKE_IO_ADDR( 7'h1f );
+parameter IO_ADDR_OLED_ADDRESS_START = MAKE_IO_ADDR( 7'h20 );
+parameter IO_ADDR_OLED_ADDRESS_END   = MAKE_IO_ADDR( 7'h27 );
+parameter IO_ADDR_OLED_DATA_START    = MAKE_IO_ADDR( 7'h28 );
+parameter IO_ADDR_OLED_DATA_END      = MAKE_IO_ADDR( 7'h2f );
 
 parameter IO_ADDR_OLED_START = MAKE_IO_ADDR( 7'h40 );// $8100: OLED開始番地
 parameter IO_ADDR_OLED_END   = MAKE_IO_ADDR( 7'h7f );// $81fc: OLED終了番地
