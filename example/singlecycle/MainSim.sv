@@ -102,6 +102,7 @@ module MainSim;
         // 70 サイクル 
         #(CYCLE_TIME*70)
         sigCP = 1'b0;
+        sigCH = 1'b0;
 
         // 40
         #(CYCLE_TIME*40)
