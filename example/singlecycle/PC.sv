@@ -17,23 +17,19 @@ module PC(
 
     InsnAddrPath pc;
 
-    always_ff @( posedge clk or negedge rst ) begin
-    
-        if( !rst ) begin
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst) begin
             pc <= INSN_RESET_VECTOR;    // リセット
         end
-        else if( wrEnable ) begin
+        else if (wrEnable) begin
             pc <= addrIn;                // 書き込み
         end
         else begin
             pc <= pc + INSN_PC_INC;    // PC 更新
         end
-        
     end
     
     // 出力
     assign addrOut = pc;
 
-
 endmodule
-

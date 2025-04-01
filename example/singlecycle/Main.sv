@@ -6,7 +6,6 @@ module Main(
     input logic btnC,
     input logic btnU,
     input logic btnD,
-    input logic btnL,
 	output logic oledDC,
 	output logic oledRES,
 	output logic oledSCLK,
@@ -16,16 +15,12 @@ module Main(
     output LampPath ledOut,
 
     input logic clkBase,    // 4倍速クロック
-    input logic rst         // リセット（0でリセット）
+    input logic rst         // リセット（1でリセット）
 );
     // 命令メモリとデータメモリは，FPGA の仕様により
     // アドレスを入力した1サイクル後にデータが読み出される．
     // このままではシングルサイクルマシンが作れないので，メモリには
     // 4倍速のクロックを入れてある．
-
-    DD_OutArray  led;    // 7seg
-    DD_GateArray gate;    // 7seg gate
-    LampPath     lamp;    // Lamp?
     
     // Clock/Reset
     logic clkX4;
@@ -62,8 +57,6 @@ module Main(
         dmemWrEnable,
         dataToCPU,
         
-        led,    // LED
-        gate,    // select 7seg
         ledOut,
 
         dataAddr,
@@ -74,7 +67,6 @@ module Main(
         btnC,
         btnU,
         btnD,
-        btnL,
 
         oledDC,
         oledRES,

@@ -31,8 +31,6 @@ module MainSim;
     logic sigCP;
     logic btnL;
 
-    DD_OutArray led;
-    DD_GateArray    gate;
     LampPath lamp;    // Lamp?
 	//OLED command pins
 	logic SDIN;
@@ -47,7 +45,6 @@ module MainSim;
         sigCH,
         btnU,
         sigCP,
-        btnL,
 	    SDIN,
         SCLK,
         DC,
@@ -79,20 +76,21 @@ module MainSim;
 `endif
         main.cpu.pc.pc = 0;
         btnU = 1'b1;
-        sigCH = 1'b1;
+        sigCH = 1'b0;
         sigCP = 1'b1;
 
         
         //
         // リセット
         //
-        rst = 1'b0;
+        rst = 1'b1;
         #(CYCLE_TIME/8*3)
 
-        rst = 1'b1;
+        rst = 1'b0;
         #(CYCLE_TIME/8)
         #(CYCLE_TIME)
         #(CYCLE_TIME)
+        sigCH = 1'b1;
     
 
         //
@@ -103,6 +101,10 @@ module MainSim;
         #(CYCLE_TIME*70)
         sigCP = 1'b0;
         sigCH = 1'b0;
+        rst = 1'b1;
+        sigCH = 1'b1;
+        #(CYCLE_TIME*5)
+        rst = 1'b0;
 
         // 40
         #(CYCLE_TIME*40)
@@ -113,7 +115,7 @@ module MainSim;
         sigCP = 1'b0;
 
         // 100 サイクル 
-        #(CYCLE_TIME*1000)
+        #(CYCLE_TIME*100000)
         for (int i = 0; i < 8; i++) begin
             $display("%x", main.dmem.mem[4096+i]);
         end 
@@ -147,7 +149,7 @@ module MainSim;
             
             
             // カウント開始
-            if( rst && clkX4 ) begin
+            if( !rst && clkX4 ) begin
                 countCycle = 1;
             end
         end

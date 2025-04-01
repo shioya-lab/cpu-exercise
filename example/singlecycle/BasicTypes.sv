@@ -64,55 +64,6 @@ typedef logic [ DATA_MEM_ADDR_WIDTH-1:0 ] DataMemPath;
 // IO
 //
 
-
-// LED
-parameter LED_IN_WIDTH  = 4;
-parameter LED_OUT_WIDTH = 8;
-
-typedef logic [ LED_IN_WIDTH  - 1 : 0 ] LED_InPath;
-typedef logic [ LED_OUT_WIDTH - 1 : 0 ] LED_OutPath;
-
-typedef logic [ LED_IN_WIDTH * 8 - 1 : 0 ] LED_InArray;
-typedef logic [ LED_OUT_WIDTH* 8 - 1 : 0 ] LED_OutArray;
-
-function automatic LED_InArray GetNextLED(
-    input LED_InArray ledIn,
-    input integer index,
-    input DataPath wrData
-);
-    LED_InArray ledOut = ledIn;
-    ledOut[index * LED_IN_WIDTH +: LED_IN_WIDTH] = wrData[LED_IN_WIDTH-1:0];
-    return ledOut;
-endfunction
-
-function automatic LED_InPath LED_InArrayAt(
-    input LED_InArray data,
-    input integer index 
-);
-    return data[ index * LED_IN_WIDTH  +: LED_IN_WIDTH  ];
-endfunction
-
-function automatic LED_OutPath LED_OutArrayAt(
-    input LED_OutArray data, 
-    input integer index
-);
-    return data[ index * LED_OUT_WIDTH +: LED_OUT_WIDTH ];
-endfunction
-
-
-// 追加ここから
-// Dynamic_Display
-
-parameter LED_DATA_WIDTH = 8;
-parameter DD_IN_WIDTH = 32;
-parameter DD_OUT_WIDTH = 8;
-parameter DD_GATE_WIDTH = 4;
-
-parameter LED_0_POS = 24;
-parameter LED_1_POS = 16;
-parameter LED_2_POS = 8;
-parameter LED_3_POS = 0;
-
 function automatic logic[7:0] ConvertToASCII(input logic[3:0] data);
 
     logic [7:0] ch;
@@ -129,35 +80,6 @@ function automatic logic[7:0] ConvertToASCII(input logic[3:0] data);
 
 endfunction
 
-typedef logic [ LED_DATA_WIDTH - 1 : 0 ] LED_DataPath;
-typedef logic [ DD_IN_WIDTH - 1 : 0 ] DD_InPath;
-typedef logic [ DD_OUT_WIDTH - 1 : 0 ] DD_OutPath;
-typedef logic [ DD_GATE_WIDTH - 1 : 0 ] DD_GatePath;
-
-typedef logic [ DD_IN_WIDTH * 2 - 1 : 0 ] DD_InArray;
-typedef logic [ DD_OUT_WIDTH * 2 - 1 : 0 ] DD_OutArray;
-typedef logic [ DD_GATE_WIDTH * 2 - 1 : 0 ] DD_GateArray;
-
-function automatic DD_InPath DD_InArrayAt(
-    input DD_InArray data,
-    input integer index
-);
-    return data[ index * DD_IN_WIDTH  +: DD_IN_WIDTH  ];
-endfunction
-
-function automatic DD_OutPath DD_OutArrayAt(
-    input DD_OutArray data,
-    input integer index
-);
-    return data[ index * DD_OUT_WIDTH +: DD_OUT_WIDTH ];
-endfunction
-
-function automatic DD_GatePath DD_GateArrayAt(
-    input DD_GateArray data,
-    input integer index
-);
-    return data[ index * DD_GATE_WIDTH +: DD_GATE_WIDTH ];
-endfunction
 
 parameter COUNT_WIDTH = 28;
 typedef logic[ COUNT_WIDTH - 1 : 0 ] CountPath;

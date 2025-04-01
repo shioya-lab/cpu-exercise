@@ -203,7 +203,7 @@ set_property PACKAGE_PIN U14 [get_ports {ledOut[7]}];  # "LD7"
 # ----------------------------------------------------------------------------
 set_property PACKAGE_PIN P16 [get_ports {btnC}];  # "BTNC"
 set_property PACKAGE_PIN R16 [get_ports {btnD}];  # "BTND"
-set_property PACKAGE_PIN N15 [get_ports {btnL}];  # "BTNL"
+set_property PACKAGE_PIN N15 [get_ports {rst}];  # "BTNL" -- reset
 #set_property PACKAGE_PIN R18 [get_ports {BTNR}];  # "BTNR"
 set_property PACKAGE_PIN T18 [get_ports {btnU}];  # "BTNU"
 
@@ -228,7 +228,7 @@ set_property PACKAGE_PIN T18 [get_ports {btnU}];  # "BTNU"
 ## ----------------------------------------------------------------------------
 ## USB OTG Reset - Bank 35
 ## ----------------------------------------------------------------------------
-set_property PACKAGE_PIN G17 [get_ports {rst}];  # "OTG-RESETN"
+#set_property PACKAGE_PIN G17 [get_ports {rst}];  # "OTG-RESETN"
 
 ## ----------------------------------------------------------------------------
 ## User DIP Switches - Bank 35
@@ -368,7 +368,7 @@ set_property IOSTANDARD LVCMOS18 [get_ports -of_objects [get_iobanks 34]];
 # Set the bank voltage for IO Bank 35 to 1.8V by default.
 # set_property IOSTANDARD LVCMOS33 [get_ports -of_objects [get_iobanks 35]];
 # set_property IOSTANDARD LVCMOS25 [get_ports -of_objects [get_iobanks 35]];
-set_property IOSTANDARD LVCMOS18 [get_ports -of_objects [get_iobanks 35]];
+# set_property IOSTANDARD LVCMOS18 [get_ports -of_objects [get_iobanks 35]];
 
 # Note that the bank voltage for IO Bank 13 is fixed to 3.3V on ZedBoard.
 set_property IOSTANDARD LVCMOS33 [get_ports -of_objects [get_iobanks 13]]

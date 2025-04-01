@@ -17,7 +17,8 @@ module ALU(
     always_comb begin
 
         aluOut = '0;
-        case ( code )
+
+        case (code)
         ALU_CODE_ADD_SUB: 
             aluOut = aluInA + aluInB;
 
@@ -53,5 +54,3 @@ module ALU(
     end
 
 endmodule
-        
-        

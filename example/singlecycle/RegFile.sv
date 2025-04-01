@@ -13,14 +13,13 @@ module RegisterFile(
     
     output DataPath rdDataA,    // 読み出しデータA
     output DataPath rdDataB,    // 読み出しデータB
-    
 
     input RegNumPath rdNumA,    // 読み出しレジスタ番号A
     input RegNumPath rdNumB,    // 読み出しレジスタ番号B
 
     input DataPath   wrData,    // 書き込みデータ
-    input RegNumPath wrNum,    // 書き込みレジスタ番号
-    input logic       wrEnable    // 書き込み制御 1の場合，書き込みを行う
+    input RegNumPath wrNum,     // 書き込みレジスタ番号
+    input logic       wrEnable  // 書き込み制御 1の場合，書き込みを行う
 );
 
     // 実際に値が入るストレージ

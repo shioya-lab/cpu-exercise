@@ -7,7 +7,6 @@
 import BasicTypes::*;
 import Types::*;
 
-
 module ClockDivider(
     output logic clk,
     input  logic rst,
@@ -21,20 +20,17 @@ module ClockDivider(
     logic clkRegX2;
     logic clkRegX4;
 
-    always_ff @( posedge clkX4 or negedge rst ) begin
-        
-        if( !rst ) begin
+    always_ff @(posedge clkX4 or posedge rst) begin
+        if (rst) begin
             clkRegX2 <= 1'b0;
         end
         else begin
             clkRegX2 <= !clkRegX2;
         end
-        
     end
 
-    always_ff @( posedge clkRegX2 or negedge rst ) begin
-        
-        if( !rst ) begin
+    always_ff @(posedge clkRegX2 or posedge rst) begin
+        if (rst) begin
             clkRegX4 <= 1'b0;
         end
         else begin
@@ -53,9 +49,9 @@ module ClockDivider(
     parameter STATE_2 = 2;
     parameter STATE_3 = 3;
 
-    always_ff @( posedge clkX4 or negedge rst ) begin
+    always_ff @( posedge clkX4 or posedge rst ) begin
         
-        if( !rst ) begin
+        if (rst) begin
             state  <= STATE_0;
             clkReg <= 0;
         end

@@ -14,7 +14,6 @@ SOURCES = \
 	DMem.sv \
 	IMem.sv \
 	IOCtrl.sv \
-	LEDDrv.sv \
 	Main.sv \
 	MainSim.sv \
 	PC.sv \
@@ -50,13 +49,13 @@ wave.vcd: obj_dir/V$(TOPLEVEL_MODULE)
 
 
 clean:
-	rm -rf obj_dir $(VIVADO_PROJECT_WORK) wave.vcd *.log *.jou
+	rm -rf obj_dir $(VIVADOSIM_PROJECT_WORK) wave.vcd *.log *.jou
 
 
 # Vivado sim may require the following additonal components:
 # sudo apt install libncurses5 libtinfo5
 
-VIVADO_PROJECT_WORK = VivadoSim
+VIVADOSIM_PROJECT_WORK = VivadoSim
 
 # Simulation tools
 XVLOG = $(VIVADO_BIN)/xvlog
@@ -67,19 +66,26 @@ XVLOG_OPTIONS = \
 	-d VIVADO_SIMULATION \
 
 vivado-compile: $(SOURCES)
-	mkdir $(VIVADO_PROJECT_WORK) -p
+	mkdir $(VIVADOSIM_PROJECT_WORK) -p
 	# compile
-	cd $(VIVADO_PROJECT_WORK) && $(XVLOG) -sv $(XVLOG_OPTIONS) -i $(SOURCE_ROOT) $(DEPS_RTL) 
+	cd $(VIVADOSIM_PROJECT_WORK) && $(XVLOG) -sv $(XVLOG_OPTIONS) -i $(SOURCE_ROOT) $(DEPS_RTL) 
 	# elaboration
-	cd $(VIVADO_PROJECT_WORK) && $(XELAB) --debug all -relax $(TOPLEVEL_MODULE)
+	cd $(VIVADOSIM_PROJECT_WORK) && $(XELAB) --debug all -relax $(TOPLEVEL_MODULE)
 
 vivado-sim: vivado-compile
-	cd $(VIVADO_PROJECT_WORK) && $(XSIM) -runall $(XSIM_OPTIONS) $(TOPLEVEL_MODULE)
+	cd $(VIVADOSIM_PROJECT_WORK) && $(XSIM) -runall $(XSIM_OPTIONS) $(TOPLEVEL_MODULE)
 
 vivado-sim-gui: vivado-compile
-	cd $(VIVADO_PROJECT_WORK) && $(XSIM) -gui $(XSIM_OPTIONS) $(TOPLEVEL_MODULE)
+	cd $(VIVADOSIM_PROJECT_WORK) && $(XSIM) -gui $(XSIM_OPTIONS) $(TOPLEVEL_MODULE)
 
+VIVADO_PROJECT_WORK = vivado_project
 
-vivado:
-	cd vivado_project/ && vivado vivado_project.xpr &
+vivado: $(VIVADO_PROJECT_WORK)/vivado_project/vivado_project.xpr
+	cd $(VIVADO_PROJECT_WORK) && vivado vivado_project/vivado_project.xpr &
 
+$(VIVADO_PROJECT_WORK)/vivado_project/vivado_project.xpr:
+	mkdir -p $(VIVADO_PROJECT_WORK)
+	cd $(VIVADO_PROJECT_WORK) && vivado -mode batch -source ../script/vivado_project.tcl
+
+vivado-clean:
+	rm -rf $(VIVADO_PROJECT_WORK)

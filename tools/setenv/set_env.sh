@@ -7,7 +7,7 @@
 # * This file is for bash.
 
 
-export CPU_EXERCISE_ROOT=/work/cpu-exercise/
+export CPU_EXERCISE_ROOT=~/work/cpu-exercise/
 
 export VERILATOR=verilator
-export VIVADO_BIN=$HOME/opt/cad/xilinx/Vivado/2019.2/bin
+export VIVADO_BIN=$HOME/opt/cad/xilinx/Vivado/2022.1/bin

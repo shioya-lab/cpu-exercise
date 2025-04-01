@@ -5,138 +5,19 @@
 import BasicTypes::*;
 import Types::*;
 
-// 7seg選択用追加モジュール
-
-localparam GATE_LED_0 = 4'b1000;
-localparam GATE_LED_1 = 4'b0100;
-localparam GATE_LED_2 = 4'b0010;
-localparam GATE_LED_3 = 4'b0001;
-
-
-module    DynamicDisplay(
-    output    DD_OutPath        ddOut,
-    output    DD_GatePath    ddGate,    
-    input    DD_InPath        ddIn,
-    input    logic            clk,
-    input    logic            rst
-    );
-
-LED_DataPath    led_0, led_1, led_2, led_3;
-DD_GatePath    gate;
-CountPath     clkCount;
-logic    ctrlSig;
-
-    always_comb begin
-        led_0 = ddIn[ LED_0_POS +: LED_DATA_WIDTH ];
-        led_1 = ddIn[ LED_1_POS +: LED_DATA_WIDTH ];
-        led_2 = ddIn[ LED_2_POS +: LED_DATA_WIDTH ];
-        led_3 = ddIn[ LED_3_POS +: LED_DATA_WIDTH ];
-        ddGate = ~gate;
-    end
-
-    always@( posedge clk or negedge rst) begin
-        if( !rst )begin
-            clkCount <= {COUNT_WIDTH{1'b0}};
-        end
-        else if( clkCount >= DEF_COUNT - 1'b1)begin
-            clkCount <= {COUNT_WIDTH{1'b0}};
-        end
-         else begin
-            clkCount <= clkCount + 1'b1;
-        end
-    end
-
-    always@( posedge clk or negedge rst) begin
-        if( !rst )begin
-            ctrlSig <= FALSE;
-        end
-        else if( clkCount >= DEF_COUNT - 1'd1 )begin
-            ctrlSig <= TRUE;
-        end
-        else begin
-            ctrlSig <= FALSE;
-        end
-    end
-
-    always@( posedge clk or negedge rst) begin
-        if( !rst )begin
-            gate <= GATE_LED_0;
-        end
-        else if( ctrlSig == TRUE )begin
-            case( gate )
-            default:    gate <= GATE_LED_1;    
-            GATE_LED_1: gate <= GATE_LED_2;
-            GATE_LED_2: gate <= GATE_LED_3;
-            GATE_LED_3: gate <= GATE_LED_0;
-            endcase
-        end
-        else begin
-            gate <= gate;
-        end
-    end
-
-    always@( posedge clk or negedge rst ) begin
-        if( !rst )begin
-            ddOut <= {LED_DATA_WIDTH{1'b0}};
-        end
-        else begin
-            case( gate )
-            GATE_LED_0: ddOut <= led_0;
-            GATE_LED_1: ddOut <= led_1;
-            GATE_LED_2: ddOut <= led_2;
-            GATE_LED_3: ddOut <= led_3;
-            default: ddOut <= {LED_DATA_WIDTH{1'b0}};
-            endcase
-        end
-    end
-
-endmodule
-
-
-module DD_Driver(
-    output DD_OutArray dstArray,
-    output DD_GateArray gateArray,
-    input  DD_InArray  srcArray,
-    input    logic    clk,
-    input    logic    rst
-);
-    
-    generate 
-    
-        genvar i;
-
-        for( i = 0; i < 2; i = i + 1 ) begin    : DD
-            DynamicDisplay
-                DD_Driver( 
-                    dstArray[i * DD_OUT_WIDTH +: DD_OUT_WIDTH], 
-                    gateArray[i * DD_GATE_WIDTH +: DD_GATE_WIDTH],
-                    srcArray[i * DD_IN_WIDTH +: DD_IN_WIDTH],
-                    clk,
-                    rst
-                );
-         end
-         
-    endgenerate
-
-endmodule
-
 module OLED_Driver(
     input logic clk,
     input logic writeOLED,
-    input logic updateOLED,
-    input logic clearOLED,
     input logic [7:0] ch,
     input logic [8:0] index,
     input logic[7:0] writeData,
     input DataPath curCycle,
-    output logic oledReady,
 	output logic oledDC,
 	output logic oledRES,
 	output logic oledSCLK,
 	output logic oledSDIN,
 	output logic oledVBAT,
-	output logic oledVDD,
-    output logic[7:0] debugLed
+	output logic oledVDD
 );
 
     //state machine codes
@@ -161,7 +42,7 @@ module OLED_Driver(
         '{"A", "d", "d", "r", ":", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "}, 
         '{"D", "a", "t", "a", ":", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "}
     };
-    always@(posedge clk) begin
+    always_ff @(posedge clk) begin
         if (regWrite) begin
             writeBuffer[regIndex[8:7]][regIndex[6:3]] <= regWriteData;
         end
@@ -200,7 +81,6 @@ module OLED_Driver(
     logic [8:0] tmp_addr;
     
     //debounced button signals used for state transitions
-    wire       rst;     // CPU RESET BUTTON turns the display on and off, on display_on, local memory is filled from string parameters
     logic init_done;
     logic init_ready;
 
@@ -234,24 +114,21 @@ module OLED_Driver(
     assign init_done = disp_off_ready | toggle_disp_ready | write_ready | update_ready;//parse ready signals for clarity
     assign init_ready = disp_on_ready;
     assign tmp_addr = write_base_addr + 8;
-    always@(posedge clk)
+    always_ff @(posedge clk)
         case (state)
             Idle: begin
-                if (rst == 1'b1 && init_ready == 1'b1) begin
+                if (init_ready == 1'b1) begin
                     disp_on_start <= 1'b1;
                     state <= Init;
                 end
             end
             Init: begin
                 disp_on_start <= 1'b0;
-                if (rst == 1'b0 && init_done == 1'b1)
+                if (init_done == 1'b1)
                     state <= Active;
             end
             Active: begin // hold until ready, then accept input
-                if (rst && disp_off_ready) begin
-                    disp_off_start <= 1'b1;
-                    state <= Done;
-                end else if (write_ready) begin
+                if (write_ready) begin
                     write_start <= 1'b1;
                     write_base_addr <= 'b0;
                     write_ascii_data <= writeBuffer[0][0];
@@ -285,7 +162,7 @@ module OLED_Driver(
             end
             Done: begin
                 disp_off_start <= 1'b0;
-                if (rst == 1'b0 && init_ready == 1'b1)
+                if (init_ready == 1'b1)
                     state <= Idle;
             end
             default: state <= Idle;
@@ -303,8 +180,6 @@ module IOCtrl(
     output logic dmemWrEnable,    // データメモリ書き込み
     output DataPath dataToCPU,    // CPU へのデータ
     
-    output DD_OutArray        led,    // 7seg
-    output DD_GateArray    gate,    // 7seg gate
     output LampPath         lamp,    // Lamp?
 
     input DataAddrPath addr,            // データアドレス
@@ -315,7 +190,6 @@ module IOCtrl(
     input logic sigCH, // btnC
     input logic btnU, // btnU
     input logic sigCP, // btnD
-    input logic btnL,
 
 	output logic oledDC,
 	output logic oledRES,
@@ -342,10 +216,7 @@ module IOCtrl(
         // A switch of input signals of the LED driver.
         // (W)
         logic     ledCtrl;
-        
-        // Input signals of the LED driver.
-        // (W)
-        LED_InArray led;
+    
         
         // Cycle count
         logic        enableCycleCount;    // (W)
@@ -361,68 +232,37 @@ module IOCtrl(
         logic btnu;
         logic btnc;
         logic cp;
-        // LampPath ledOut;
-    } ctrlReg, ctrlNext, ctrlInit;
+    } ctrlReg, ctrlNext;
 
     // Output buffer
     struct packed {
-        LED_OutArray led;
         LampPath lamp;
-        logic [7:0] ch;
-        logic [8:0] oledIndex;
-        logic writeOLED;
-        logic updateOLED;
-        logic clearOLED;
     } outReg, outNext;
 
-    struct packed {
-        logic [7:0] ch;
-        logic [8:0] oledIndex;
-        logic writeOLED;
-    } oledCtrlReg, oledCtrlNext;
     
     // Indicates whether an address is IO or not.
     logic isIO;
     
     logic writeOLED;
-    logic updateOLED;
-    logic clearOLED;
     logic [7:0] write_ascii_data;
     logic [8:0] write_base_addr;
-    logic oledReady;
-    // LED Driver
-    LED_InArray  ledDrvIn;        // 4-bitx8 input
-    LED_OutArray ledDrvOut;    // 7-bitx8 output
-    LED_Driver ledDrv0( ledDrvOut, ledDrvIn );
 
-    logic [5:0] wrIndex;
     logic[7:0] writeData;
     logic [2:0] offset;
-    
-    // Dynamic Display
-    DD_OutArray    ddDrvOut;
-    DD_GateArray        ddDrvGate;
-    DD_Driver ddDrv0( ddDrvOut, ddDrvGate, outReg.led, clk, rst );
-
-    logic [7:0] debugLed, ledTest;
 
     OLED_Driver oledDrv0 (
         .clk(clk),
         .writeOLED(writeOLED),
-        .updateOLED(updateOLED),
-        .clearOLED (clearOLED),
         .ch(write_ascii_data),
         .writeData(writeData),
         .curCycle (ctrlReg.cycleCount),
         .index(write_base_addr),
-        .oledReady(oledReady),
         .oledDC(oledDC),
         .oledRES(oledRES),
         .oledSCLK(oledSCLK),
         .oledSDIN(oledSDIN),
         .oledVBAT(oledVBAT),
-        .oledVDD(oledVDD),
-        .debugLed (debugLed)
+        .oledVDD(oledVDD)
     );
 
     //
@@ -458,25 +298,21 @@ module IOCtrl(
         writeData = ConvertToASCII(dataFromCPU[3:0]);
         offset = 3'b111 - addr[4:2];
 
+        if (addr[6:5] == 2'b00) begin
+            write_base_addr = {3'b001, offset, 3'b000};
+        end
+        else if (addr[6:5] == 2'b01) begin
+            write_base_addr = {3'b011, offset, 3'b000};
+        end
+        else if (addr[6:5] == 2'b10) begin
+            write_base_addr = {3'b101, offset, 3'b000};
+        end
+        else if (addr[6:5] == 2'b11) begin
+            write_base_addr = {3'b111, offset, 3'b000};
+        end
         // 書き込み
         if( isIO && weFromCPU ) begin
             writeOLED = addr[7];
-            if (addr[6:5] == 2'b00) begin
-                write_base_addr = {3'b001, offset, 3'b000};
-                writeOLED = TRUE;
-            end
-            else if (addr[6:5] == 2'b01) begin
-                write_base_addr = {3'b011, offset, 3'b000};
-                writeOLED = TRUE;
-            end
-            else if (addr[6:5] == 2'b10) begin
-                write_base_addr = {3'b101, offset, 3'b000};
-                writeOLED = TRUE;
-            end
-            else if (addr[6:5] == 2'b11) begin
-                write_base_addr = {3'b111, offset, 3'b000};
-                writeOLED = TRUE;
-            end
             case( PICK_IO_ADDR( addr ) ) 
 
                 IO_ADDR_SORT_FINISH:    ctrlNext.sortFinish = dataFromCPU[0];
@@ -492,7 +328,6 @@ module IOCtrl(
                     
         // 読み出し
         if( isIO ) begin
-
             // IO
             case( PICK_IO_ADDR( addr ) ) 
                 IO_ADDR_SORT_START: dataToCPU[0] = sigCH;
@@ -508,15 +343,6 @@ module IOCtrl(
             // データメモリ
             dataToCPU = dataFromDMem;
 
-        end
-        
-        
-        // LED ドライバ
-        if( ctrlReg.ledCtrl == LED_CTRL_USER ) begin
-            ledDrvIn = ctrlReg.led;
-        end
-        else begin
-            ledDrvIn = ctrlReg.cycleCount;
         end
         
         
@@ -543,46 +369,23 @@ module IOCtrl(
         
         // LED & Lamp
         outNext.lamp = ctrlReg.lamp;
-        outNext.led  = ledDrvOut;
 
         // 出力
-        led  = ddDrvOut;
         lamp = outReg.lamp;
-        gate = ddDrvGate;
-        // lamp = {{4'b0}, sigCH, btnU, sigCP, btnL};
-
-        // writeOLED = outReg.writeOLED;
-        // write_ascii_data = ConvertToASCII(outReg.ch[3:0]);
-        // write_base_addr = outReg.oledIndex;
-        updateOLED = outReg.updateOLED;
-        clearOLED = outReg.clearOLED;
-        // lamp = write_ascii_data;
-        // ledOut = ctrlReg.ledOut;
-        
-        //
-        // リセット
-        //
-        ctrlInit = 0;
-        // ctrlInit.btnc = 1'b1;
-        // ctrlInit.cp = 1'b1;
-        // ctrlInit.ce = 1'b1;
      end
     
 
     //
     // --- レジスタ
     //
-    always_ff @( posedge clk or negedge rst) begin
-        if( !rst ) begin
-            ctrlReg <= ctrlInit;
-            outReg  <= 0;
-            ledTest <= 0;
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst) begin
+            ctrlReg <= '0;
+            outReg  <= '0;
         end
         else begin
             ctrlReg <= ctrlNext;
             outReg  <= outNext;
-            // if (btnU)
-            //     ledTest <= ledTest + 1;
         end
     end
 

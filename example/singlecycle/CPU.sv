@@ -3,59 +3,58 @@ import BasicTypes::*;
 import Types::*;
 
 module CPU(
-
     input logic clk,    // クロック
     input logic rst,    // リセット
     
-    output InsnAddrPath insnAddr,        // 命令メモリへのアドレス出力
-    output DataAddrPath dataAddr,        // データバスへのアドレス出力
+    output InsnAddrPath insnAddr,       // 命令メモリへのアドレス出力
+    output DataAddrPath dataAddr,       // データバスへのアドレス出力
     output DataPath     dataOut,        // 書き込みデータ出力
                                         // dataAddr で指定したアドレスに対して書き込む値を出力する．
-    output logic         dataWrEnable,    // データ書き込み有効
+    output logic        dataWrEnable,   // データ書き込み有効
 
-    input  InsnPath      insn,            // 命令メモリからの入力
-    input  DataPath     dataIn            // 読み出しデータ入力
+    input  InsnPath     insn,           // 命令メモリからの入力
+    input  DataPath     dataIn          // 読み出しデータ入力
                                         // dataAddr で指定したアドレスから読んだ値が入力される．
 );
     
     // PC
     InsnAddrPath pcOut;        // アドレス出力
-    InsnAddrPath pcIn;            // 外部書き込みをする時のアドレス
-    logic pcWrEnable;            // 外部書き込み有効
+    InsnAddrPath pcIn;         // 外部書き込みをする時のアドレス
+    logic pcWrEnable;          // 外部書き込み有効
     
     // IMem
-    InsnPath imemInsnCode;        // 命令コード
+    InsnPath imemInsnCode;     // 命令コード
     
     // Decoder
     OpInfo dcOpinfo;
-    OpPath dcOp;                // OP フィールド
+    OpPath dcOp;               // OP フィールド
     RegNumPath rs1;            // RS フィールド
     RegNumPath rs2;            // RT フィールド
-    RegNumPath dcRD;            // RD フィールド
-    ShamtPath dcShamt;            // SHAMT フィールド
-    FunctPath dcFunct;            // FUNCT フィールド
+    RegNumPath dcRD;           // RD フィールド
+    ShamtPath dcShamt;         // SHAMT フィールド
+    FunctPath dcFunct;         // FUNCT フィールド
     ConstantPath dcConstat;    // CONSTANT フィールド
 
     // Controll
     ALUCodePath aluCode;        // ALU の制御コード
     BrCodePath dcBrCode;        // ブランチの制御コード
-    logic dcIsSrcA_Rt;            // ソースの1個目が Rt かどうか
+    logic dcIsSrcA_Rt;          // ソースの1個目が Rt かどうか
     logic dcIsDstRt;            // ディスティネーションがRtかどうか
     logic dcIsALUInConstant;    // ALU の入力が Constant かどうか
-    logic dcIsLoadInsn;            // ロード命令かどうか
+    logic dcIsLoadInsn;         // ロード命令かどうか
     logic dcIsStoreInsn;        // ストア命令かどうか
 
     // レジスタ・ファイル
     DataPath rfRdData1;        // 読み出しデータ rs
     DataPath rfRdData2;        // 読み出しデータ rt
-    DataPath   rfWrData;        // 書き込みデータ
+    DataPath   rfWrData;       // 書き込みデータ
     RegNumPath rfWrNum;        // 書き込み番号
-    logic       rfWrEnable;        // 書き込み制御 1の場合，書き込みを行う
+    logic       rfWrEnable;    // 書き込み制御 1の場合，書き込みを行う
     
     // ALU
-    DataPath aluOut;            // ALU 出力
-    DataPath aluInA;            // ALU 入力A
-    DataPath aluInB;            // ALU 入力B
+    DataPath aluOut;           // ALU 出力
+    DataPath aluInA;           // ALU 入力A
+    DataPath aluInB;           // ALU 入力B
     
     // Branch
     logic brTaken;
