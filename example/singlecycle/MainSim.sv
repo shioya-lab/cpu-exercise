@@ -47,9 +47,6 @@ module MainSim;
         VBAT,
         VDD,
         lamp,
-        // led,
-        // gate,
-        // lamp,    // Lamp?
         clkX4,    // 4倍速クロック
         rst     // リセット（0でリセット）
     );
@@ -70,9 +67,9 @@ module MainSim;
         $dumpvars;
 `endif
         main.cpu.pc.pc = 0;
-        btnU = 1'b1;
+        btnU = 1'b0;
         btnC = 1'b0;
-        btnD = 1'b1;
+        btnD = 1'b0;
 
         
         //
@@ -88,33 +85,13 @@ module MainSim;
         btnC = 1'b1;
     
 
-        //
-        // シミュレーション開始
-        //
+		//
+		// シミュレーション開始
+		//
 
-        // 70 サイクル 
-        #(CYCLE_TIME*70)
-        btnD = 1'b0;
-        btnC = 1'b0;
-        rst = 1'b1;
-        btnC = 1'b1;
-        #(CYCLE_TIME*5)
-        rst = 1'b0;
-
-        // 40
-        #(CYCLE_TIME*40)
-        btnD = 1'b1;
-
-        // 10
-        #(CYCLE_TIME*10)
-        btnD = 1'b0;
-
-        // 100 サイクル 
-        #(CYCLE_TIME*1000000)
-        for (int i = 0; i < 8; i++) begin
-            $display("%x", main.dmem.mem[4096+i]);
-        end 
-        $finish;
+		// 100 サイクル 
+		#(CYCLE_TIME*100)
+		$finish;
     end
 
     // クロック
