@@ -137,8 +137,8 @@ parameter IO_ADDR_LAMP        = MAKE_IO_ADDR( 7'h2 );// $8008: LED Lamp
 parameter IO_ADDR_SORT_START  = MAKE_IO_ADDR( 7'h3 );// $800C: ソート開始
 
 parameter IO_ADDR_BTNU       = MAKE_IO_ADDR( 7'h4 );// $8010: BTNU スイッチ
-parameter IO_ADDR_CP         = MAKE_IO_ADDR( 7'h5 );// $8014: CP スイッチ
-parameter IO_ADDR_CH         = MAKE_IO_ADDR( 7'h6 );// $8018: CH スイッチ
+parameter IO_ADDR_BTND       = MAKE_IO_ADDR( 7'h5 );// $8014: BTND スイッチ
+parameter IO_ADDR_BTNC       = MAKE_IO_ADDR( 7'h6 );// $8018: BTNC スイッチ
 parameter IO_ADDR_CYCLE      = MAKE_IO_ADDR( 7'h7 );// $801C: 現在のサイクル
 
 parameter IO_ADDR_DISPLAY_CYCLE_BEGIN = MAKE_IO_ADDR( 7'h8 ); // $8080 - $803C 1000 0000 - 0011 1100
@@ -152,18 +152,32 @@ parameter IO_ADDR_DISPLAY_DATA_END    = MAKE_IO_ADDR( 7'h27 ); // $80FC - $809C 
 
 parameter DISPLAY_WRITE_BIT_POS = 7;
 
+parameter DISPLAY_COLUMN_NUM = 16;
+parameter DISPLAY_COLUMN_INDEX_BIT_POS = 2;
+parameter DISPLAY_COLUMN_INDEX_BIT_WIDTH = 4;
+typedef logic [DISPLAY_COLUMN_INDEX_BIT_WIDTH-1:0] DisplayColumnIndex;
+
+function automatic DisplayColumnIndex GET_DISPLAY_COLOMN_ADDR(
+    input DataAddrPath address
+);
+    logic [DISPLAY_COLUMN_INDEX_BIT_WIDTH-2:0] addr;
+    addr = 3'b111 - address[DISPLAY_COLUMN_INDEX_BIT_POS+:DISPLAY_COLUMN_INDEX_BIT_WIDTH-1];
+    return {1'b1, addr};
+endfunction
+
 parameter DISPLAY_ROW_NUM = 4;
 parameter DISPLAY_ROW_INDEX_BIT_POS = 5;
 parameter DISPLAY_ROW_INDEX_BIT_WIDTH = 2;
 typedef logic [DISPLAY_ROW_INDEX_BIT_WIDTH-1:0] DisplayRowIndex;
 
-parameter DISPLAY_COLUMN_NUM = 16;
-parameter DISPLAY_COLUMN_INDEX_BIT_POS = 2;
-parameter DISPLAY_COLUMN_INDEX_BIT_WIDTH = 3;
-typedef logic [DISPLAY_COLUMN_INDEX_BIT_WIDTH-1:0] DisplayColumnIndex;
+function automatic DisplayRowIndex GET_DISPLAY_ROW_ADDR(
+    input DataAddrPath address
+);
+    return address[DISPLAY_ROW_INDEX_BIT_POS+:DISPLAY_ROW_INDEX_BIT_WIDTH];
+endfunction
 
 parameter DISPLAY_INDEX_BIT_WIDTH = 
-    DISPLAY_ROW_INDEX_BIT_WIDTH + DISPLAY_COLUMN_INDEX_BIT_WIDTH + 1;
+    DISPLAY_ROW_INDEX_BIT_WIDTH + DISPLAY_COLUMN_INDEX_BIT_WIDTH;
 typedef logic [DISPLAY_INDEX_BIT_WIDTH-1:0] DisplayIndex;
 
 parameter DISPLAY_OFFSET_BIT_WIDTH = 3;
@@ -171,16 +185,9 @@ parameter DISPLAY_OFFSET_BIT_WIDTH = 3;
 parameter DISPLAY_FULL_INDEX_BIT_WIDTH = DISPLAY_INDEX_BIT_WIDTH + DISPLAY_OFFSET_BIT_WIDTH;
 typedef logic [DISPLAY_FULL_INDEX_BIT_WIDTH-1:0] DisplayFullIndex;
 
-function automatic DisplayColumnIndex GET_DISPLAY_COLOMN_ADDR(
-    input DataAddrPath address
-);
-    return address [DISPLAY_COLUMN_INDEX_BIT_POS+:DISPLAY_COLUMN_INDEX_BIT_WIDTH];
-endfunction
+// For displaying current cycle
 
-function automatic DisplayRowIndex GET_DISPLAY_ROW_ADDR(
-    input DataAddrPath address
-);
-    return address [DISPLAY_ROW_INDEX_BIT_POS+:DISPLAY_ROW_INDEX_BIT_WIDTH];
-endfunction
+parameter CURRENT_CYCLE_CHAR_NUM = DATA_WIDTH / HEXADECIMAL_BIT_WIDTH;
+parameter CURRENT_CYCLE_DISPLAY_COLUMN_POS = 8;
 
 endpackage

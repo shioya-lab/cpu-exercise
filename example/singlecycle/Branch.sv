@@ -6,17 +6,12 @@ import BasicTypes::*;
 import Types::*;
 
 module BranchUnit(
-    output InsnAddrPath pcOut,
     output logic brTaken,
 
-    input InsnAddrPath pcIn,
     input BrCodePath    brCode,
     input DataPath     rs1,
-    input DataPath     rs2,
-    input ImmediatePath imm
+    input DataPath     rs2
 );
-
-    InsnAddrPath disp;
 
     always_comb begin
 
@@ -29,9 +24,7 @@ module BranchUnit(
         BR_CODE_GEU:   brTaken = ($unsigned(rs1) >= $unsigned(rs2)) ? TRUE : FALSE;
         default:       brTaken = FALSE;
         endcase
-        
-        disp = EXPAND_BR_DISPLACEMENT(imm);
-        pcOut = pcIn + disp;
+
     end
 
 endmodule

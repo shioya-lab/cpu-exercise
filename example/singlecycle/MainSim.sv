@@ -22,10 +22,9 @@ module MainSim;
     logic clkX4;        // 4倍速クロック
     logic rst;
 
-    logic sigCH;
+    logic btnC;
     logic btnU;
-    logic sigCP;
-    logic btnL;
+    logic btnD;
 
     LampPath lamp;    // Lamp?
 	//OLED command pins
@@ -38,9 +37,9 @@ module MainSim;
 
     // Main モジュール
     Main main(
-        sigCH,
+        btnC,
         btnU,
-        sigCP,
+        btnD,
 	    SDIN,
         SCLK,
         DC,
@@ -72,8 +71,8 @@ module MainSim;
 `endif
         main.cpu.pc.pc = 0;
         btnU = 1'b1;
-        sigCH = 1'b0;
-        sigCP = 1'b1;
+        btnC = 1'b0;
+        btnD = 1'b1;
 
         
         //
@@ -86,7 +85,7 @@ module MainSim;
         #(CYCLE_TIME/8)
         #(CYCLE_TIME)
         #(CYCLE_TIME)
-        sigCH = 1'b1;
+        btnC = 1'b1;
     
 
         //
@@ -95,20 +94,20 @@ module MainSim;
 
         // 70 サイクル 
         #(CYCLE_TIME*70)
-        sigCP = 1'b0;
-        sigCH = 1'b0;
+        btnD = 1'b0;
+        btnC = 1'b0;
         rst = 1'b1;
-        sigCH = 1'b1;
+        btnC = 1'b1;
         #(CYCLE_TIME*5)
         rst = 1'b0;
 
         // 40
         #(CYCLE_TIME*40)
-        sigCP = 1'b1;
+        btnD = 1'b1;
 
         // 10
         #(CYCLE_TIME*10)
-        sigCP = 1'b0;
+        btnD = 1'b0;
 
         // 100 サイクル 
         #(CYCLE_TIME*1000000)

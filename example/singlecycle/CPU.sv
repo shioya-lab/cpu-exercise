@@ -54,13 +54,10 @@ module CPU(
 
     // Branch Unit
     BranchUnit branch(
-        pcIn,    // BranchUnit への入力は in と out が逆になるのを注意
         brTaken,
-        pcOut,
         dcOpinfo.funct3,
         rfRdData1,
-        rfRdData2,
-        dcOpinfo.imm
+        rfRdData2
     );
     
 
@@ -99,14 +96,24 @@ module CPU(
         imemInsnCode = insn;
         insnAddr     = pcOut;
 
-        pcWrEnable = brTaken && dcOpinfo.isBranch;
+        if (dcOpinfo.isJump) begin
+            pcWrEnable = TRUE;
+        end
+        else if (dcOpinfo.isBranch) begin
+            pcWrEnable = brTaken;
+        end
+        else begin
+            pcWrEnable = FALSE;
+        end
+        pcIn = pcOut + EXPAND_BR_DISPLACEMENT(dcOpinfo.imm);
         
         // Data memory
         dataOut  = rfRdData2;
         dataAddr = GET_ADDR(rfRdData1 + dcOpinfo.imm);
         
         // Register write data
-        rfWrData = dcOpinfo.isLoad ? dataIn : aluOut;
+        rfWrData = dcOpinfo.isJump ? {21'b0, pcOut} + INSN_PC_INC:
+            (dcOpinfo.isLoad ? dataIn : aluOut);
         
         // Register write num
         rfWrNum = dcOpinfo.rd;
