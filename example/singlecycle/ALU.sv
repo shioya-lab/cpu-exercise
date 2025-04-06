@@ -11,7 +11,7 @@ module ALU(
     input DataPath aluInA,
     input DataPath aluInB,
     input ALUCodePath code,
-    input logic[6:0] funct7
+    input Funct7Path funct7
 );
 
     always_comb begin
@@ -23,7 +23,7 @@ module ALU(
             aluOut = aluInA + aluInB;
 
         ALU_CODE_SLL:
-            aluOut = aluInA << GET_SHIFT( aluInB );
+            aluOut = aluInA << GET_SHAMT(aluInB);
         ALU_CODE_SLT:
             aluOut[0] = aluInA < aluInB ? TRUE: FALSE;
 
@@ -35,10 +35,10 @@ module ALU(
 
         ALU_CODE_SRL_SRA: begin
             if (funct7 == SHIFT_FUNCT7_SRA) begin
-                aluOut = aluInA >>> GET_SHIFT( aluInB );
+                aluOut = aluInA >>> GET_SHAMT(aluInB);
             end
             else if (funct7 == SHIFT_FUNCT7_SRL) begin
-                aluOut = aluInA >> GET_SHIFT( aluInB );
+                aluOut = aluInA >> GET_SHAMT(aluInB);
             end
             else begin
                 aluOut = 32'hcdcdcdcd;

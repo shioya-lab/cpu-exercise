@@ -80,5 +80,3 @@ module ClockDivider(
 `endif
 
 endmodule
-        
-        

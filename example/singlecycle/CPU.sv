@@ -27,22 +27,6 @@ module CPU(
     
     // Decoder
     OpInfo dcOpinfo;
-    OpPath dcOp;               // OP フィールド
-    RegNumPath rs1;            // RS フィールド
-    RegNumPath rs2;            // RT フィールド
-    RegNumPath dcRD;           // RD フィールド
-    ShamtPath dcShamt;         // SHAMT フィールド
-    FunctPath dcFunct;         // FUNCT フィールド
-    ConstantPath dcConstat;    // CONSTANT フィールド
-
-    // Controll
-    ALUCodePath aluCode;        // ALU の制御コード
-    BrCodePath dcBrCode;        // ブランチの制御コード
-    logic dcIsSrcA_Rt;          // ソースの1個目が Rt かどうか
-    logic dcIsDstRt;            // ディスティネーションがRtかどうか
-    logic dcIsALUInConstant;    // ALU の入力が Constant かどうか
-    logic dcIsLoadInsn;         // ロード命令かどうか
-    logic dcIsStoreInsn;        // ストア命令かどうか
 
     // レジスタ・ファイル
     DataPath rfRdData1;        // 読み出しデータ rs
@@ -76,7 +60,7 @@ module CPU(
         dcOpinfo.funct3,
         rfRdData1,
         rfRdData2,
-        dcOpinfo.constant
+        dcOpinfo.imm
     );
     
 
@@ -103,7 +87,7 @@ module CPU(
         aluOut,
         aluInA,
         aluInB,
-        aluCode,
+        dcOpinfo.funct3,
         dcOpinfo.funct7
     );
     
@@ -119,7 +103,7 @@ module CPU(
         
         // Data memory
         dataOut  = rfRdData2;
-        dataAddr = EXPAND_ADDRESS(rfRdData1 + dcOpinfo.constant);
+        dataAddr = GET_ADDR(rfRdData1 + dcOpinfo.imm);
         
         // Register write data
         rfWrData = dcOpinfo.isLoad ? dataIn : aluOut;
@@ -129,17 +113,14 @@ module CPU(
 
         // ALU
         aluInA = rfRdData1;
-        aluInB = dcOpinfo.isALUInConstant ? dcOpinfo.constant : rfRdData2;
-        if (!dcOpinfo.isALUInConstant && dcOpinfo.funct7 == OP_FUNCT7_SUB) begin
+        aluInB = dcOpinfo.isALUInImm ? dcOpinfo.imm : rfRdData2;
+        if (!dcOpinfo.isALUInImm && dcOpinfo.funct7 == OP_FUNCT7_SUB) begin
             aluInB = -aluInB;
         end
-        aluCode = dcOpinfo.funct3;
 
         // DMem write enable
         dataWrEnable = dcOpinfo.isStore;
         
-     end
-    
+    end
 
 endmodule
-

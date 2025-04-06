@@ -2,11 +2,9 @@
 // 2 Read / 1 Write レジスタ・ファイル
 //
 
-
 // 基本的な型を定義したファイルの読み込み
 import BasicTypes::*;
 import Types::*;
-
 
 module RegisterFile(
     input logic clk,            // クロック
@@ -24,14 +22,13 @@ module RegisterFile(
 
     // 実際に値が入るストレージ
     // DataPath の配列（サイズ：REG_FILE_SIZE）
-    DataPath storage[ 0 : REG_FILE_SIZE-1 ]; 
-
+    DataPath storage[0 : REG_FILE_SIZE-1];
 
     // 書き込みと，レジスタ・ファイルの実現
     // クロックの立ち上がりによって書き込みが行われる と言う動作を書くことで，
     // コンパイラはこれを順序回路だと解釈する．
-    always_ff @( posedge clk ) begin
-        if ( wrEnable && wrNum != '0 ) begin            // 書き込み制御
+    always_ff @(posedge clk) begin
+        if (wrEnable && wrNum != '0) begin            // 書き込み制御
             storage[ wrNum ] <= wrData;    // 順序回路では，ノンブロッキング代入で
         end
     end
@@ -43,4 +40,3 @@ module RegisterFile(
     end
 
 endmodule
-

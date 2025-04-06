@@ -51,6 +51,4 @@ module DMem(
 `endif
     end
 
-
 endmodule
-

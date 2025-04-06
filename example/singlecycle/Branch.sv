@@ -13,7 +13,7 @@ module BranchUnit(
     input BrCodePath    brCode,
     input DataPath     rs1,
     input DataPath     rs2,
-    input ConstantPath constant
+    input ImmediatePath imm
 );
 
     InsnAddrPath disp;
@@ -30,9 +30,8 @@ module BranchUnit(
         default:       brTaken = FALSE;
         endcase
         
-        disp = EXPAND_BR_DISPLACEMENT( constant );
+        disp = EXPAND_BR_DISPLACEMENT(imm);
         pcOut = pcIn + disp;
     end
 
 endmodule
-

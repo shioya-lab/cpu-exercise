@@ -3,11 +3,9 @@
 //
 
 
-
 // 基本的な型を定義したファイルの読み込み
 import BasicTypes::*;
 import Types::*;
-
 
 //
 // 全体の検証用モジュール
@@ -15,8 +13,6 @@ import Types::*;
 module MainSim;
 
     parameter CYCLE_TIME = 200; // 1サイクルを 200ns に設定
-
-    integer i;
 
     integer cycle;        // サイクル
     integer cycleX4;    // 4倍速サイクル
@@ -66,7 +62,7 @@ module MainSim;
         // 初期化
         //
         main.cpu.regFile.storage[0] = '0;
-        for( i = 1; i < REG_FILE_SIZE; i++ ) begin
+        for (int i = 1; i < REG_FILE_SIZE; i++) begin
             main.cpu.regFile.storage[ i ] = 32'hcdcdcdcd;
         end
         
@@ -115,14 +111,11 @@ module MainSim;
         sigCP = 1'b0;
 
         // 100 サイクル 
-        #(CYCLE_TIME*100000)
+        #(CYCLE_TIME*1000000)
         for (int i = 0; i < 8; i++) begin
             $display("%x", main.dmem.mem[4096+i]);
         end 
         $finish;
-
-
-     
     end
 
     // クロック
@@ -137,24 +130,20 @@ module MainSim;
             // 4倍速
             clkX4 = !clkX4 ;
             
-            if( countCycle ) begin
+            if (countCycle) begin
 
                 cycleX4 = cycleX4 + 1;
                 // 等速
-                if( cycleX4 % 8 == 0 ) begin
+                if (cycleX4 % 8 == 0) begin
                     cycle = cycle + 1 ;
                 end
-
             end
             
-            
             // カウント開始
-            if( !rst && clkX4 ) begin
+            if (!rst && clkX4) begin
                 countCycle = 1;
             end
         end
     end
 
 endmodule
-
-
