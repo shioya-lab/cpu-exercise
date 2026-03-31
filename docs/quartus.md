@@ -1,6 +1,8 @@
 
 # Quartus Prime
 
+このページは旧構成の資料です．現在の標準手順では Quartus Prime ではなく Vivado を使用します．
+
 以下のリンクからダウンロードして，インストールしてください．
 * https://fpgasoftware.intel.com/?edition=lite
 * Quartus Prime (includes Nios II EDS) のほか，その下にある Devices の中から Cyclone IV device support も一緒にダウンロードしてください．

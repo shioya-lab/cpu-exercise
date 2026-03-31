@@ -1,6 +1,8 @@
 
 # ModelSim
 
+このページは旧構成の資料です．現在の標準手順では，主に Verilator と GTKWave を使い，必要に応じて Vivado XSim を使ってください．
+
 ModelSim は Verilog の論理検証を行うためのシミュレータです．この実験では，主にこの ModelSim を使ってソースのデバッグを行います．
 
 ## シミュレーションの仕方

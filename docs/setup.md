@@ -4,45 +4,78 @@
 
 ## インストール
 
-* Modelsim フリー版をインストール
-    * https://www.intel.co.jp/content/www/jp/ja/software/programmable/quartus-prime/model-sim.html
-    * リンクを進んで「個別ファイル」のところの Intel FPGA Edition のところにある
-    * アドレスは割とコロコロかわるので，そこにない場合はググって探してください
+現在のリポジトリは，主に Verilator と Vivado を使う構成です．
+
+* 必須
+    * git
+    * make
+    * Verilator
+* あると便利
+    * GTKWave
+* FPGA 合成や実機確認を行う場合
+    * Vivado
+* エディタ
+    * VSCode を使うことを前提に説明します
+    * 下記拡張をいれておいてください
+        * SystemVerilog - Language Support
+        * svls-vscode
 * Windows ユーザーの場合
-    * cygwin を導入しておいてください
-    * WSL でも大丈夫かもしれませんが，試してないです
-        * GUI の起動などにおいて問題が起きるかもしれません
-* 共通
-    * git, make が必要ですので，インストールしておいてください
-    * エディタとしては VSCode を使うことを前提に説明します．
-        * 下記拡張をいれておいてください
-            * SystemVerilog - Language Support
-            * svls-vscode
-* 環境変数の設定
-    * tools/setenv/ に移動し，SetEnv.bat/SetEnv.sh を使用して環境変数を設定
+    * WSL2 上で作業するのが無難です
+    * GUI ツールを使う場合は，WSLg または各自の X 環境を用意してください
 
+## 環境変数の設定
 
+* `tools/setenv/` に移動
+* `set_env.sh` をコピーして自分用の設定ファイルを作成
+* 作成したファイルを `source` して環境変数を設定
+* 少なくとも以下が通っていることを確認
+    * `CPU_EXERCISE_ROOT`
+    * `VERILATOR`
+    * `VIVADO_BIN` （Vivado を使う場合）
 
 ## シミュレーションのテスト
 
-ここまでの設定がうまく行っているかを確認するため，加算器のシミュレーションを行ってみます．
+ここまでの設定がうまく行っているかを確認するため，加算器のシミュレーションを行います．
 
-* tutorial/adder に移動
-* make と打って Enter を押す．
-    * 下のように出ればOK
-        ```
-        Model Technology ModelSim ALTERA vlog 6.6d Compiler 2010.11 Nov  2 2010
-        -- Compiling module Adder
-        -- Compiling module H3_Simulator
+### Verilator で確認する場合
 
-        Top level modules:
-                H3_Simulator
-        ```
-* make sim-gui と打って Enter を押す．
-    * シミュレータが立ち上がり，シミュレータ内の下の方に以下のように加算の結果が出ていればOK
-        ```
-            #  run 50ns 
-            #          0 a(    1) *  b(    8) = c(    9)
-            #         40 a(    9) *  b(    6) = c(   15)
-        ```
+* `tutorial/adder` に移動
+* `make` を実行
+    * `obj_dir/VAdderSim` が生成されれば OK
+* `make sim` を実行
+    * シミュレーションが最後まで実行されれば OK
+* `make view` を実行
+    * `wave.vcd` が生成され，GTKWave で波形を開ければ OK
+
+### Vivado XSim で確認する場合
+
+* `tutorial/adder` に移動
+* `make vivado-sim` を実行
+    * コンパイルと実行が通れば OK
+* GUI で確認したい場合は `make vivado-sim-gui` を実行
+
+## プロセッサのビルド
+
+シングルサイクル CPU のサンプルや演習用ひな形も同様の手順で扱えます．
+
+* 演習用ひな形: `tutorial/processor`
+* 参考実装: `example/singlecycle`
+
+各ディレクトリで以下を使います．
+
+* `make`
+    * Verilator でビルド
+* `make sim`
+    * コマンドラインでシミュレーション実行
+* `make view`
+    * 波形を GTKWave で確認
+* `make vivado-sim`
+    * XSim でシミュレーション実行
+* `make vivado`
+    * Vivado プロジェクトを生成して開く
+
+## 補足
+
+* `docs/modelsim.md` と `docs/quartus.md` は旧構成の資料として残しています
+* 現行の作業手順では，まず Verilator で検証し，必要に応じて Vivado / XSim と実機確認に進んでください
 

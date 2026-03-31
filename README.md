@@ -17,12 +17,12 @@
 * [作成するプロセッサの仕様](docs/specification.md)
 * [チュートリアル](docs/tutorial.md)
 * [高速化に向けて](docs/optimize.md)
-* ツール
-    * [ModelSim](docs/modelsim.md)
-    * [Quartus Prime](docs/quartus.md)
 * 言語
     * [Verilogの記法について](docs/verilog.md)
     * [HDLの記述例](docs/hdl.md)
 * [デバッグ](docs/debug.md)
 * [アセンブルについて](docs/assembler.md)
 * [性能評価の仕方](docs/evaluation.md)
+* ツール（これらは現在は使用していません）
+    * [ModelSim](docs/modelsim.md)
+    * [Quartus Prime](docs/quartus.md)
